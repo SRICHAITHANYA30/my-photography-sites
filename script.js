@@ -404,84 +404,158 @@ function addGalleryImage(imagePath, altText = '') {
     galleryGrid.appendChild(galleryItem);
 }
 
-// Admin Mode Management
+// Admin Mode Management (Password Protected - Only for Host)
 let isAdminMode = false;
 
-// Check if admin mode was previously enabled
+// Admin Password - Change this to your desired password
+// IMPORTANT: Keep this password secret! Only you (the host) should know it.
+const ADMIN_PASSWORD = 'admin2024'; // Change this to your own secure password
+
+// Check if admin mode was previously enabled (with session timeout)
 function checkAdminMode() {
     const savedAdminMode = localStorage.getItem('galleryAdminMode');
-    if (savedAdminMode === 'true') {
-        enableAdminMode();
+    const adminModeTime = localStorage.getItem('galleryAdminModeTime');
+    
+    // Check if admin mode was enabled within the last 24 hours
+    if (savedAdminMode === 'true' && adminModeTime) {
+        const timeDiff = Date.now() - parseInt(adminModeTime);
+        const hours24 = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+        
+        if (timeDiff < hours24) {
+            enableAdminMode();
+        } else {
+            // Session expired, require password again
+            localStorage.removeItem('galleryAdminMode');
+            localStorage.removeItem('galleryAdminModeTime');
+        }
     }
+}
+
+// Prompt for admin password
+function promptAdminPassword() {
+    const password = prompt('Enter admin password to access photo upload:');
+    
+    if (password === ADMIN_PASSWORD) {
+        enableAdminMode();
+        return true;
+    } else if (password !== null) {
+        // User entered something but it was wrong
+        alert('Incorrect password. Access denied.');
+        return false;
+    }
+    // User cancelled the prompt
+    return false;
 }
 
 // Enable admin mode
 function enableAdminMode() {
     isAdminMode = true;
     localStorage.setItem('galleryAdminMode', 'true');
-    const uploadSection = document.getElementById('gallery-upload-section');
-    const adminToggle = document.getElementById('admin-toggle');
+    localStorage.setItem('galleryAdminModeTime', Date.now().toString());
     
+    const uploadSection = document.getElementById('gallery-upload-section');
     if (uploadSection) {
         uploadSection.style.display = 'block';
+        // Scroll to upload section smoothly
+        uploadSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
-    if (adminToggle) {
-        adminToggle.classList.add('active');
-        adminToggle.textContent = '🔓';
-        adminToggle.title = 'Admin Mode Active';
-    }
+    
+    console.log('✅ Admin mode enabled');
 }
 
 // Disable admin mode
 function disableAdminMode() {
     isAdminMode = false;
     localStorage.removeItem('galleryAdminMode');
-    const uploadSection = document.getElementById('gallery-upload-section');
-    const adminToggle = document.getElementById('admin-toggle');
+    localStorage.removeItem('galleryAdminModeTime');
     
+    const uploadSection = document.getElementById('gallery-upload-section');
     if (uploadSection) {
         uploadSection.style.display = 'none';
     }
-    if (adminToggle) {
-        adminToggle.classList.remove('active');
-        adminToggle.textContent = '🔒';
-        adminToggle.title = 'Enable Admin Mode';
-    }
+    
+    console.log('🔒 Admin mode disabled');
 }
 
 // Admin mode initialization (called from main DOMContentLoaded)
 function initializeAdminMode() {
+    // Check if admin mode was previously enabled (within 24 hours)
     checkAdminMode();
     
-    // Admin toggle button
-    const adminToggle = document.getElementById('admin-toggle');
-    if (adminToggle) {
-        adminToggle.addEventListener('click', () => {
-            if (isAdminMode) {
-                disableAdminMode();
-            } else {
-                enableAdminMode();
+    // Secret keyboard shortcut to access admin mode: Press 'A' key 3 times quickly
+    let keyPressCount = 0;
+    let keyPressTimer = null;
+    
+    document.addEventListener('keydown', function(e) {
+        // Only trigger if not typing in an input field
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+            return;
+        }
+        
+        // Secret shortcut: Press 'A' key 3 times (or 'a')
+        if (e.key.toLowerCase() === 'a') {
+            keyPressCount++;
+            
+            // Reset counter after 2 seconds
+            clearTimeout(keyPressTimer);
+            keyPressTimer = setTimeout(() => {
+                keyPressCount = 0;
+            }, 2000);
+            
+            // If 'A' is pressed 3 times, prompt for password
+            if (keyPressCount === 3) {
+                keyPressCount = 0;
+                if (!isAdminMode) {
+                    promptAdminPassword();
+                }
             }
-        });
-    }
+        }
+    });
     
     // Exit admin button
     const exitAdmin = document.getElementById('exit-admin');
     if (exitAdmin) {
         exitAdmin.addEventListener('click', () => {
-            disableAdminMode();
+            if (confirm('Exit admin mode? You will need to enter the password again to access upload features.')) {
+                disableAdminMode();
+            }
+        });
+    }
+    
+    // Additional security: Double-click on gallery title to access admin (hidden feature)
+    const galleryTitle = document.querySelector('#gallery .section-title');
+    if (galleryTitle) {
+        let clickCount = 0;
+        let clickTimer = null;
+        
+        galleryTitle.addEventListener('click', function() {
+            clickCount++;
+            clearTimeout(clickTimer);
+            clickTimer = setTimeout(() => {
+                clickCount = 0;
+            }, 500);
+            
+            if (clickCount === 2 && !isAdminMode) {
+                clickCount = 0;
+                promptAdminPassword();
+            }
         });
     }
 }
 
-// Photo Upload Functionality (Only works in admin mode)
+// Photo Upload Functionality (Only works in admin mode with password)
 const photoUpload = document.getElementById('photo-upload');
 if (photoUpload) {
     photoUpload.addEventListener('change', function(e) {
-        // Check if admin mode is enabled
+        // Double-check admin mode is enabled (security)
         if (!isAdminMode) {
-            alert('Admin mode is required to upload photos.');
+            alert('Access denied. Admin mode is required to upload photos.');
             this.value = '';
+            // Try to prompt for password
+            if (promptAdminPassword()) {
+                // If password correct, allow upload by triggering change again
+                this.click();
+            }
             return;
         }
         
