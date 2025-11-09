@@ -240,7 +240,11 @@ SRICHAITHANYA DIGITALS Website`,
                 text: response.text,
                 response: response
             });
-            console.log('📧 Check your EmailJS dashboard → Email History to verify');
+            console.log('📧 IMPORTANT: Check your EmailJS dashboard → Email History');
+            console.log('📧 If email shows "OK" but not received, check:');
+            console.log('   1. EmailJS Template "To Email" field is set to: srichaithanyacseaiml@gmail.com');
+            console.log('   2. Template is Published (not Draft)');
+            console.log('   3. Check Gmail spam folder');
             showSuccessMessage('Thank you! Your booking request has been sent successfully. We will contact you soon.');
             contactForm.reset();
         })
