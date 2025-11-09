@@ -292,16 +292,28 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
-// EmailJS Configuration (leave as-is or update with your own keys)
+// EmailJS Configuration
+// Updated with your EmailJS account credentials
 const EMAILJS_CONFIG = {
-    PUBLIC_KEY: '-FPLxoEKAgrftVYRJ',
-    SERVICE_ID: 'service_uovuw8h',
-    TEMPLATE_ID: 'template_dele6fz'
+    PUBLIC_KEY: 'AkADBIUF3aHanmrFx',        // Your EmailJS Public Key
+    SERVICE_ID: 'service_uovuw8h',           // Your Gmail Service ID
+    TEMPLATE_ID: 'template_dele6fz'          // Your Contact Us Template ID
 };
 
-if (typeof emailjs !== 'undefined' && EMAILJS_CONFIG.PUBLIC_KEY) {
-    try { emailjs.init(EMAILJS_CONFIG.PUBLIC_KEY); console.log('EmailJS initialized'); }
-    catch (err) { console.warn('EmailJS init failed', err); }
+// Initialize EmailJS
+if (typeof emailjs !== 'undefined') {
+    if (EMAILJS_CONFIG.PUBLIC_KEY && EMAILJS_CONFIG.PUBLIC_KEY !== 'YOUR_PUBLIC_KEY') {
+        try { 
+            emailjs.init(EMAILJS_CONFIG.PUBLIC_KEY); 
+            console.log('✅ EmailJS initialized successfully');
+        } catch (err) { 
+            console.error('❌ EmailJS init failed:', err); 
+        }
+    } else {
+        console.warn('⚠️ EmailJS Public Key not configured. Please set up EmailJS.');
+    }
+} else {
+    console.warn('⚠️ EmailJS library not loaded. Check if the script is included in HTML.');
 }
 
 // Contact Form Handling
@@ -358,9 +370,15 @@ if (contactForm) {
     const serviceName = serviceNames[formData.service] || formData.service || 'Not specified';
     
     // Prepare email template parameters
-    // Using standard Contact Us template variables + booking details
+    // All variables that can be used in your EmailJS template
+    const bookingTime = new Date().toLocaleString('en-IN', { 
+        timeZone: 'Asia/Kolkata',
+        dateStyle: 'full',
+        timeStyle: 'short'
+    });
+    
     const emailParams = {
-        // Standard Contact Us template variables
+        // Standard Contact Us template variables (most common)
         from_name: formData.name,
         from_email: formData.email,
         message: `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -380,11 +398,7 @@ Service Type: ${serviceName}
 Preferred Date: ${formattedDate}
 Photographer Arrival Time: ${formattedTime}
 Location/Address: ${formData.location}
-Booking Time: ${new Date().toLocaleString('en-IN', { 
-            timeZone: 'Asia/Kolkata',
-            dateStyle: 'full',
-            timeStyle: 'short'
-        })}
+Booking Time: ${bookingTime}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 MESSAGE FROM CUSTOMER:
@@ -399,7 +413,7 @@ Please contact the customer to confirm the booking.
 
 ---
 SRICHAITHANYA DIGITALS Website`,
-        // Additional variables for custom templates
+        // Additional variables for detailed templates
         customer_name: formData.name,
         customer_email: formData.email,
         customer_phone: formData.phone || 'Not provided',
@@ -407,12 +421,10 @@ SRICHAITHANYA DIGITALS Website`,
         booking_date: formattedDate,
         arrival_time: formattedTime,
         location: formData.location,
-        booking_time: new Date().toLocaleString('en-IN', { 
-            timeZone: 'Asia/Kolkata',
-            dateStyle: 'full',
-            timeStyle: 'short'
-        }),
-        reply_to: formData.email
+        booking_time: bookingTime,
+        reply_to: formData.email,
+        // To email (your email address)
+        to_email: 'srichaithanyacseaiml@gmail.com'
     };
     
     // Check if EmailJS is configured - if not, fall back to showing success and logging details
@@ -427,14 +439,46 @@ SRICHAITHANYA DIGITALS Website`,
     }
 
     // Send via EmailJS
+    console.log('📧 Attempting to send email...');
+    console.log('EmailJS Config:', {
+        serviceId: EMAILJS_CONFIG.SERVICE_ID,
+        templateId: EMAILJS_CONFIG.TEMPLATE_ID,
+        hasPublicKey: !!EMAILJS_CONFIG.PUBLIC_KEY
+    });
+    console.log('Email Parameters:', emailParams);
+    
     emailjs.send(EMAILJS_CONFIG.SERVICE_ID, EMAILJS_CONFIG.TEMPLATE_ID, emailParams)
         .then(function(response) {
+            console.log('✅ Email sent successfully!', {
+                status: response.status,
+                text: response.text
+            });
             showSuccessMessage('Thank you! Your booking request has been sent successfully. We will contact you soon.');
             contactForm.reset();
         })
         .catch(function(error) {
-            console.error('EmailJS send error:', error);
-            showErrorMessage('There was a problem sending your booking request. Please try again or contact us directly.');
+            console.error('❌ EmailJS send error:', error);
+            console.error('Error details:', {
+                status: error.status,
+                text: error.text,
+                serviceId: EMAILJS_CONFIG.SERVICE_ID,
+                templateId: EMAILJS_CONFIG.TEMPLATE_ID,
+                publicKey: EMAILJS_CONFIG.PUBLIC_KEY ? 'Set' : 'Missing'
+            });
+            
+            // More specific error messages
+            let errorMessage = 'There was a problem sending your booking request. ';
+            if (error.status === 400) {
+                errorMessage += 'Please check your EmailJS template configuration.';
+            } else if (error.status === 401) {
+                errorMessage += 'EmailJS authentication failed. Please check your Public Key.';
+            } else if (error.status === 404) {
+                errorMessage += 'EmailJS service or template not found. Please check your Service ID and Template ID.';
+            } else {
+                errorMessage += 'Please try again or contact us directly at srichaithanyacseaiml@gmail.com';
+            }
+            
+            showErrorMessage(errorMessage);
         })
         .finally(function() {
             submitButton.textContent = originalButtonText;
