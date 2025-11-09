@@ -9,6 +9,8 @@
     <!-- Modern font pair: Inter for UI and Playfair for headings -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
+    <!-- Google Identity Services -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
     <a class="skip-link" href="#main">Skip to content</a>
@@ -21,6 +23,14 @@
                 <li><a href="#gallery">Gallery</a></li>
                 <li><a href="#contact">Book Now</a></li>
             </ul>
+            <div class="user-auth" id="user-auth" style="display: none;">
+                <div class="user-info" id="user-info">
+                    <img id="user-avatar" src="" alt="User" class="user-avatar">
+                    <span id="user-name" class="user-name"></span>
+                </div>
+                <button id="logout-btn" class="logout-btn">Logout</button>
+            </div>
+            <button id="login-btn-nav" class="login-btn-nav" style="display: none;">Login</button>
             <div class="hamburger">
                 <span></span>
                 <span></span>
@@ -98,6 +108,13 @@
                         <p>ERODE</p>
                     </div>
                 </div>
+                <div id="login-prompt" class="login-prompt" style="display: none;">
+                    <div class="login-prompt-content">
+                        <h3>🔒 Login Required</h3>
+                        <p>Please login with your Google account to book a photoshoot</p>
+                        <button id="login-btn-prompt" class="btn-primary">Login with Google</button>
+                    </div>
+                </div>
                 <form class="contact-form" id="contact-form">
                     <div class="form-group">
                         <label for="name">Name *</label>
@@ -157,6 +174,17 @@
             </div>
         </div>
     </footer>
+
+    <!-- Login Modal -->
+    <div id="login-modal" class="login-modal">
+        <div class="login-modal-content">
+            <span class="close-modal" id="close-modal">&times;</span>
+            <h2>Login to Book Your Photoshoot</h2>
+            <p class="login-subtitle">Please sign in with your Google account to continue</p>
+            <div id="google-signin-button" class="google-signin-container"></div>
+            <p class="login-note">By signing in, you agree to our terms of service</p>
+        </div>
+    </div>
 
     <!-- EmailJS for sending emails -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>

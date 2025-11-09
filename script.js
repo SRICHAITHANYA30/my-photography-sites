@@ -1,4 +1,265 @@
+// ============================================
+// Google Authentication & User Management
+// ============================================
+
+let currentUser = null;
+
+// Check if user is logged in on page load
+function checkAuthStatus() {
+    const savedUser = localStorage.getItem('galleryUser');
+    if (savedUser) {
+        try {
+            currentUser = JSON.parse(savedUser);
+            updateUIForLoggedInUser();
+        } catch (e) {
+            console.error('Error parsing saved user:', e);
+            localStorage.removeItem('galleryUser');
+        }
+    } else {
+        updateUIForLoggedOutUser();
+    }
+}
+
+// Update UI when user is logged in
+function updateUIForLoggedInUser() {
+    if (!currentUser) return;
+    
+    // Show user info in navbar
+    const userAuth = document.getElementById('user-auth');
+    const loginBtnNav = document.getElementById('login-btn-nav');
+    const contactForm = document.getElementById('contact-form');
+    const loginPrompt = document.getElementById('login-prompt');
+    
+    if (userAuth) {
+        userAuth.style.display = 'flex';
+        const userAvatar = document.getElementById('user-avatar');
+        const userName = document.getElementById('user-name');
+        
+        if (userAvatar && currentUser.picture) {
+            userAvatar.src = currentUser.picture;
+        }
+        if (userName) {
+            userName.textContent = currentUser.name || currentUser.email;
+        }
+    }
+    
+    if (loginBtnNav) {
+        loginBtnNav.style.display = 'none';
+    }
+    
+    // Show booking form, hide login prompt
+    if (contactForm) {
+        contactForm.style.display = 'block';
+    }
+    if (loginPrompt) {
+        loginPrompt.style.display = 'none';
+    }
+    
+    // Pre-fill form with user info
+    const nameInput = document.getElementById('name');
+    const emailInput = document.getElementById('email');
+    if (nameInput && currentUser.name) {
+        nameInput.value = currentUser.name;
+    }
+    if (emailInput && currentUser.email) {
+        emailInput.value = currentUser.email;
+    }
+}
+
+// Update UI when user is logged out
+function updateUIForLoggedOutUser() {
+    const userAuth = document.getElementById('user-auth');
+    const loginBtnNav = document.getElementById('login-btn-nav');
+    const contactForm = document.getElementById('contact-form');
+    const loginPrompt = document.getElementById('login-prompt');
+    
+    if (userAuth) {
+        userAuth.style.display = 'none';
+    }
+    
+    if (loginBtnNav) {
+        loginBtnNav.style.display = 'block';
+    }
+    
+    // Hide booking form, show login prompt
+    if (contactForm) {
+        contactForm.style.display = 'none';
+    }
+    if (loginPrompt) {
+        loginPrompt.style.display = 'block';
+    }
+}
+
+// Handle Google Sign-In
+function handleCredentialResponse(response) {
+    // Decode the JWT token (simplified - in production, verify on server)
+    try {
+        const payload = JSON.parse(atob(response.credential.split('.')[1]));
+        
+        currentUser = {
+            name: payload.name,
+            email: payload.email,
+            picture: payload.picture,
+            sub: payload.sub
+        };
+        
+        // Save to localStorage
+        localStorage.setItem('galleryUser', JSON.stringify(currentUser));
+        
+        // Update UI
+        updateUIForLoggedInUser();
+        
+        // Close modal
+        closeLoginModal();
+        
+        // Show success message
+        showSuccessMessage('Successfully logged in! You can now book your photoshoot.');
+        
+        // Scroll to booking form
+        const contactSection = document.getElementById('contact');
+        if (contactSection) {
+            setTimeout(() => {
+                contactSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 500);
+        }
+    } catch (error) {
+        console.error('Error processing Google sign-in:', error);
+        showErrorMessage('Login failed. Please try again.');
+    }
+}
+
+// Logout function
+function logout() {
+    currentUser = null;
+    localStorage.removeItem('galleryUser');
+    updateUIForLoggedOutUser();
+    showSuccessMessage('You have been logged out successfully.');
+    
+    // Clear form
+    const contactForm = document.getElementById('contact-form');
+    if (contactForm) {
+        contactForm.reset();
+    }
+}
+
+// Login Modal Management
+function openLoginModal() {
+    const modal = document.getElementById('login-modal');
+    if (modal) {
+        modal.classList.add('show');
+        document.body.style.overflow = 'hidden';
+        
+        // Initialize Google Sign-In button if not already done
+        if (typeof google !== 'undefined' && google.accounts) {
+            initializeGoogleSignIn();
+        } else {
+            // Wait for Google script to load
+            const checkGoogle = setInterval(() => {
+                if (typeof google !== 'undefined' && google.accounts) {
+                    clearInterval(checkGoogle);
+                    initializeGoogleSignIn();
+                }
+            }, 100);
+        }
+    }
+}
+
+function closeLoginModal() {
+    const modal = document.getElementById('login-modal');
+    if (modal) {
+        modal.classList.remove('show');
+        document.body.style.overflow = '';
+    }
+}
+
+// Initialize Google Sign-In button
+function initializeGoogleSignIn() {
+    const signInContainer = document.getElementById('google-signin-button');
+    if (!signInContainer || !google.accounts) return;
+    
+    // Clear any existing button
+    signInContainer.innerHTML = '';
+    
+    google.accounts.id.initialize({
+        client_id: 'YOUR_GOOGLE_CLIENT_ID', // You'll need to replace this
+        callback: handleCredentialResponse,
+        auto_select: false,
+        cancel_on_tap_outside: true
+    });
+    
+    google.accounts.id.renderButton(
+        signInContainer,
+        {
+            theme: 'filled_blue',
+            size: 'large',
+            text: 'signin_with',
+            width: 300
+        }
+    );
+}
+
+// Initialize authentication on page load
+document.addEventListener('DOMContentLoaded', () => {
+    checkAuthStatus();
+    
+    // Login button handlers
+    const loginBtnNav = document.getElementById('login-btn-nav');
+    const loginBtnPrompt = document.getElementById('login-btn-prompt');
+    const closeModal = document.getElementById('close-modal');
+    const logoutBtn = document.getElementById('logout-btn');
+    
+    if (loginBtnNav) {
+        loginBtnNav.addEventListener('click', openLoginModal);
+    }
+    
+    if (loginBtnPrompt) {
+        loginBtnPrompt.addEventListener('click', openLoginModal);
+    }
+    
+    if (closeModal) {
+        closeModal.addEventListener('click', closeLoginModal);
+    }
+    
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', logout);
+    }
+    
+    // Close modal when clicking outside
+    const modal = document.getElementById('login-modal');
+    if (modal) {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeLoginModal();
+            }
+        });
+    }
+    
+    // Initialize Google Sign-In when page loads (if user is not logged in)
+    if (!currentUser && typeof google !== 'undefined' && google.accounts) {
+        // Google script loads async, so we'll initialize when needed
+    }
+    
+    // Load gallery images
+    if (galleryImages.length > 0) {
+        galleryImages.forEach((imagePath, index) => {
+            addGalleryImage(imagePath, `Photo ${index + 1}`);
+        });
+    }
+    
+    // Set minimum date for booking form to today
+    const dateInput = document.getElementById('date');
+    if (dateInput) {
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.setAttribute('min', today);
+    }
+    
+    // Initialize admin mode
+    initializeAdminMode();
+});
+
+// ============================================
 // Mobile Navigation Toggle (robust)
+// ============================================
 const hamburger = document.querySelector('.hamburger');
 const navMenu = document.querySelector('.nav-menu');
 if (hamburger && navMenu) {
@@ -48,6 +309,13 @@ const contactForm = document.getElementById('contact-form');
 if (contactForm) {
     contactForm.addEventListener('submit', function(e) {
     e.preventDefault();
+    
+    // Check if user is logged in
+    if (!currentUser) {
+        showErrorMessage('Please login first to book a photoshoot.');
+        openLoginModal();
+        return;
+    }
     
     // Get form data
     const formData = {
@@ -312,8 +580,8 @@ function disableAdminMode() {
     }
 }
 
-// Initialize admin mode on page load
-document.addEventListener('DOMContentLoaded', () => {
+// Admin mode initialization (called from main DOMContentLoaded)
+function initializeAdminMode() {
     checkAdminMode();
     
     // Admin toggle button
@@ -335,7 +603,7 @@ document.addEventListener('DOMContentLoaded', () => {
             disableAdminMode();
         });
     }
-});
+}
 
 // Photo Upload Functionality (Only works in admin mode)
 const photoUpload = document.getElementById('photo-upload');
@@ -419,14 +687,7 @@ const galleryImages = [
     // Add as many as you want!
 ];
 
-// Load gallery images when page loads
-window.addEventListener('DOMContentLoaded', () => {
-    if (galleryImages.length > 0) {
-        galleryImages.forEach((imagePath, index) => {
-            addGalleryImage(imagePath, `Photo ${index + 1}`);
-        });
-    }
-});
+// Load gallery images when page loads (moved to main DOMContentLoaded)
 
 // Navbar scroll effect
 let lastScroll = 0;
@@ -444,10 +705,5 @@ window.addEventListener('scroll', () => {
     lastScroll = currentScroll;
 });
 
-// Set minimum date for booking form to today
-const dateInput = document.getElementById('date');
-if (dateInput) {
-    const today = new Date().toISOString().split('T')[0];
-    dateInput.setAttribute('min', today);
-}
+// Removed duplicate - now handled in main DOMContentLoaded
 
