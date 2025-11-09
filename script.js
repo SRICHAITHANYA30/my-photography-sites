@@ -267,6 +267,68 @@ function addGalleryImage(imagePath, altText = '') {
     galleryGrid.appendChild(galleryItem);
 }
 
+// Photo Upload Functionality
+const photoUpload = document.getElementById('photo-upload');
+if (photoUpload) {
+    photoUpload.addEventListener('change', function(e) {
+        const files = e.target.files;
+        
+        if (files.length === 0) return;
+        
+        const galleryGrid = document.getElementById('gallery-grid');
+        const placeholder = document.querySelector('.gallery-placeholder');
+        
+        // Remove placeholder on first upload
+        if (placeholder) {
+            placeholder.remove();
+        }
+        
+        // Process each selected file
+        Array.from(files).forEach((file, index) => {
+            // Check if file is an image
+            if (!file.type.startsWith('image/')) {
+                console.warn(`File ${file.name} is not an image, skipping.`);
+                return;
+            }
+            
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                const galleryItem = document.createElement('div');
+                galleryItem.className = 'gallery-item';
+                
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.alt = file.name || `Photo ${index + 1}`;
+                img.loading = 'lazy';
+                
+                // Add fade-in animation
+                galleryItem.style.opacity = '0';
+                galleryItem.style.transform = 'scale(0.9)';
+                
+                galleryItem.appendChild(img);
+                galleryGrid.appendChild(galleryItem);
+                
+                // Animate in
+                setTimeout(() => {
+                    galleryItem.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    galleryItem.style.opacity = '1';
+                    galleryItem.style.transform = 'scale(1)';
+                }, index * 100);
+            };
+            
+            reader.onerror = function() {
+                console.error('Error reading file:', file.name);
+            };
+            
+            reader.readAsDataURL(file);
+        });
+        
+        // Reset input to allow selecting the same file again
+        photoUpload.value = '';
+    });
+}
+
 // Gallery Images - Add your photos here
 // Simply add your image paths to the array below
 // Place your images in the 'images' folder and update the paths

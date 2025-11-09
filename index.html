@@ -43,11 +43,18 @@
     <section id="gallery" class="gallery">
         <div class="container">
             <h2 class="section-title">Gallery</h2>
+            <div class="gallery-upload-section">
+                <label for="photo-upload" class="upload-btn">
+                    <span>📷 Upload Photos</span>
+                    <input type="file" id="photo-upload" accept="image/*" multiple style="display: none;">
+                </label>
+                <p class="upload-hint">Select one or more photos from your computer</p>
+            </div>
             <div class="gallery-grid" id="gallery-grid">
                 <!-- Photos will be added here dynamically -->
                 <div class="gallery-placeholder">
                     <p>Your photos will appear here</p>
-                    <small>Add images by placing them in the 'images' folder and updating script.js</small>
+                    <small>Click "Upload Photos" above to add images from your computer</small>
                 </div>
             </div>
         </div>
