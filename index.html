@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SRICHAITHANYA DIGITALS - Book Your Session</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Cormorant+Garamond:wght@300;400;500;600;700&family=Lora:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">SRICHAITHANYA DIGITALS</div>
+            <ul class="nav-menu">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#gallery">Gallery</a></li>
+                <li><a href="#contact">Book Now</a></li>
+            </ul>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-background"></div>
+        <div class="hero-content">
+            <h1>Welcome to SRICHAITHANYA DIGITALS</h1>
+            <p>Capturing your beautiful moments</p>
+            <a href="#contact" class="btn-primary">Book a Photoshoot</a>
+        </div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section id="gallery" class="gallery">
+        <div class="container">
+            <h2 class="section-title">Gallery</h2>
+            <div class="gallery-grid" id="gallery-grid">
+                <!-- Photos will be added here dynamically -->
+                <div class="gallery-placeholder">
+                    <p>Your photos will appear here</p>
+                    <small>Add images by placing them in the 'images' folder and updating script.js</small>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Promotional Banner (for ads/promotions) -->
+    <section class="promo-banner" id="promo-section">
+        <div class="container">
+            <div class="promo-content">
+                <h2>Special Offer!</h2>
+                <p>Book your session this month and get 20% off</p>
+                <a href="#contact" class="btn-secondary">Learn More</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact/Booking Section -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <h2 class="section-title">Book a Photoshoot</h2>
+            <p class="section-subtitle">Get in touch to discuss your photography needs</p>
+            <div class="contact-wrapper">
+                <div class="contact-info">
+                    <h3>Contact Information</h3>
+                    <div class="info-item">
+                        <strong>Email:</strong>
+                        <p>srichaithanyacseaiml@gmail.com</p>
+                    </div>
+                    <div class="info-item">
+                        <strong>Phone:</strong>
+                        <p>9566381467</p>
+                    </div>
+                    <div class="info-item">
+                        <strong>Location:</strong>
+                        <p>ERODE</p>
+                    </div>
+                </div>
+                <form class="contact-form" id="contact-form">
+                    <div class="form-group">
+                        <label for="name">Name *</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email *</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone</label>
+                        <input type="tel" id="phone" name="phone">
+                    </div>
+                    <div class="form-group">
+                        <label for="service">Service Type</label>
+                        <select id="service" name="service">
+                            <option value="">Select a service</option>
+                            <option value="portrait">Portrait Photography</option>
+                            <option value="wedding">Wedding Photography</option>
+                            <option value="event">Event Photography</option>
+                            <option value="nature">Nature & Landscape</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="date">Preferred Date</label>
+                        <input type="date" id="date" name="date">
+                    </div>
+                    <div class="form-group">
+                        <label for="time">Photographer Arrival Time</label>
+                        <input type="time" id="time" name="time">
+                        <small style="color: #666; font-size: 0.9rem; display: block; margin-top: 0.5rem;">Please specify the time when the photographer should reach the location</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="location">Location/Address *</label>
+                        <textarea id="location" name="location" rows="3" placeholder="Enter the complete address where the photoshoot will take place" required></textarea>
+                        <small style="color: #666; font-size: 0.9rem; display: block; margin-top: 0.5rem;">Please provide the complete address including street, city, and any landmarks</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Message *</label>
+                        <textarea id="message" name="message" rows="5" required></textarea>
+                    </div>
+                    <button type="submit" class="btn-primary">Send Message</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 SRICHAITHANYA DIGITALS. All rights reserved.</p>
+            <div class="social-links">
+                <a href="#" aria-label="Instagram">📷</a>
+                <a href="#" aria-label="Facebook">👤</a>
+                <a href="#" aria-label="Twitter">🐦</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- EmailJS for sending emails -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
+
