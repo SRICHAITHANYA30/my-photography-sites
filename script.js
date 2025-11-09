@@ -1,65 +1,52 @@
-// Mobile Navigation Toggle
+// Mobile Navigation Toggle (robust)
 const hamburger = document.querySelector('.hamburger');
 const navMenu = document.querySelector('.nav-menu');
-
-hamburger.addEventListener('click', () => {
-    navMenu.classList.toggle('active');
-});
-
-// Close mobile menu when clicking on a link
-document.querySelectorAll('.nav-menu a').forEach(link => {
-    link.addEventListener('click', () => {
-        navMenu.classList.remove('active');
+if (hamburger && navMenu) {
+    const toggleNav = () => navMenu.classList.toggle('active');
+    hamburger.addEventListener('click', toggleNav);
+    // make hamburger keyboard accessible
+    hamburger.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') toggleNav();
     });
-});
 
-// Smooth Scrolling
+    // Close mobile menu when clicking on a link
+    document.querySelectorAll('.nav-menu a').forEach(link => {
+        link.addEventListener('click', () => {
+            navMenu.classList.remove('active');
+        });
+    });
+}
+
+// Smooth Scrolling (safe selection)
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
+        const href = this.getAttribute('href');
+        if (!href || href === '#') return;
+        const target = document.querySelector(href);
         if (target) {
-            const offsetTop = target.offsetTop - 60;
-            window.scrollTo({
-                top: offsetTop,
-                behavior: 'smooth'
-            });
+            e.preventDefault();
+            const offsetTop = target.offsetTop - 70;
+            window.scrollTo({ top: offsetTop, behavior: 'smooth' });
         }
     });
 });
 
-// Initialize EmailJS
-// IMPORTANT: Follow these steps to set up email notifications:
-// 1. Go to https://www.emailjs.com/ and create a free account
-// 2. Create an email service (Gmail recommended)
-// 3. Create an email template (see SETUP_INSTRUCTIONS.md)
-// 4. Get your Public Key, Service ID, and Template ID
-// 5. Replace the placeholders below with your actual credentials
-// 6. Uncomment the emailjs.init() line and the emailjs.send() code
-
-// EmailJS Configuration
+// EmailJS Configuration (leave as-is or update with your own keys)
 const EMAILJS_CONFIG = {
-    PUBLIC_KEY: '-FPLxoEKAgrftVYRJ',     // Your EmailJS Public Key
-    SERVICE_ID: 'service_uovuw8h',        // Your EmailJS Service ID
-    TEMPLATE_ID: 'template_dele6fz'       // Your EmailJS Template ID (Contact Us)
-    // NOTE: Private Key (Uf8RVcXHAVs33ajPk_1NZ) is NOT needed for client-side code
-    // Private keys should never be exposed in frontend code for security reasons
+    PUBLIC_KEY: '-FPLxoEKAgrftVYRJ',
+    SERVICE_ID: 'service_uovuw8h',
+    TEMPLATE_ID: 'template_dele6fz'
 };
 
-// Initialize EmailJS automatically if configured
-if (EMAILJS_CONFIG.PUBLIC_KEY !== 'YOUR_PUBLIC_KEY' && EMAILJS_CONFIG.PUBLIC_KEY) {
-    try {
-        emailjs.init(EMAILJS_CONFIG.PUBLIC_KEY);
-        console.log('EmailJS initialized successfully');
-    } catch (error) {
-        console.error('Error initializing EmailJS:', error);
-    }
+if (typeof emailjs !== 'undefined' && EMAILJS_CONFIG.PUBLIC_KEY) {
+    try { emailjs.init(EMAILJS_CONFIG.PUBLIC_KEY); console.log('EmailJS initialized'); }
+    catch (err) { console.warn('EmailJS init failed', err); }
 }
 
 // Contact Form Handling
 const contactForm = document.getElementById('contact-form');
-
-contactForm.addEventListener('submit', function(e) {
+if (contactForm) {
+    contactForm.addEventListener('submit', function(e) {
     e.preventDefault();
     
     // Get form data
@@ -160,69 +147,33 @@ SRICHAITHANYA DIGITALS Website`,
         reply_to: formData.email
     };
     
-    // Check if EmailJS is configured
-    if (EMAILJS_CONFIG.PUBLIC_KEY === 'YOUR_PUBLIC_KEY' || 
-        EMAILJS_CONFIG.SERVICE_ID === 'YOUR_SERVICE_ID' || 
-        EMAILJS_CONFIG.TEMPLATE_ID === 'YOUR_TEMPLATE_ID') {
-        // EmailJS not configured yet - show instructions
-        console.log('EmailJS not configured. Booking details:', emailParams);
-        showSuccessMessage('Thank you! Your booking request has been received. We will contact you soon. (Note: Please set up EmailJS to receive email notifications)');
+    // Check if EmailJS is configured - if not, fall back to showing success and logging details
+    const configured = EMAILJS_CONFIG.PUBLIC_KEY && EMAILJS_CONFIG.SERVICE_ID && EMAILJS_CONFIG.TEMPLATE_ID;
+    if (!configured || typeof emailjs === 'undefined') {
+        console.log('EmailJS not configured or library missing. Booking details:', emailParams);
+        showSuccessMessage('Thank you! Your booking request has been received. We will contact you soon. (Enable EmailJS to receive email notifications)');
         contactForm.reset();
         submitButton.textContent = originalButtonText;
         submitButton.disabled = false;
         return;
     }
-    
-    // Verify EmailJS is loaded
-    if (typeof emailjs === 'undefined') {
-        console.error('EmailJS library not loaded');
-        showErrorMessage('EmailJS library not loaded. Please refresh the page and try again.');
-        submitButton.textContent = originalButtonText;
-        submitButton.disabled = false;
-        return;
-    }
-    
-    // Send email using EmailJS
-    console.log('Sending email with:', {
-        serviceId: EMAILJS_CONFIG.SERVICE_ID,
-        templateId: EMAILJS_CONFIG.TEMPLATE_ID,
-        params: emailParams
-    });
-    
+
+    // Send via EmailJS
     emailjs.send(EMAILJS_CONFIG.SERVICE_ID, EMAILJS_CONFIG.TEMPLATE_ID, emailParams)
         .then(function(response) {
-            console.log('Email sent successfully!', response.status, response.text);
             showSuccessMessage('Thank you! Your booking request has been sent successfully. We will contact you soon.');
             contactForm.reset();
         })
         .catch(function(error) {
-            console.error('Error sending email:', error);
-            console.error('Error details:', JSON.stringify(error, null, 2));
-            
-            // More detailed error message
-            let errorMsg = 'Sorry, there was an error sending your message. ';
-            
-            if (error.text) {
-                errorMsg += 'Error: ' + error.text + '. ';
-                
-                // Specific error messages
-                if (error.text.includes('template') || error.text.includes('Template')) {
-                    errorMsg += 'Please check your EmailJS template ID. ';
-                }
-                if (error.text.includes('service') || error.text.includes('Service')) {
-                    errorMsg += 'Please check your EmailJS service ID. ';
-                }
-            } else if (error.message) {
-                errorMsg += 'Error: ' + error.message + '. ';
-            }
-            
-            errorMsg += 'Please verify your EmailJS configuration or contact us directly at srichaithanyacseaiml@gmail.com or call 9566381467.';
-            showErrorMessage(errorMsg);
+            console.error('EmailJS send error:', error);
+            showErrorMessage('There was a problem sending your booking request. Please try again or contact us directly.');
         })
         .finally(function() {
             submitButton.textContent = originalButtonText;
             submitButton.disabled = false;
         });
+    });
+}
 });
 
 // Helper function to format date
