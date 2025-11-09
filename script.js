@@ -10,6 +10,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const contactForm = document.getElementById('contact-form');
     if (contactForm) {
         contactForm.style.display = 'block';
+        
+        // Attach form submission handler HERE (inside DOMContentLoaded)
+        console.log('✅ Contact form found - attaching event listener...');
+        attachFormHandler(contactForm);
+    } else {
+        console.error('❌ Contact form not found!');
     }
     
     // Load gallery images
@@ -89,43 +95,43 @@ if (typeof emailjs !== 'undefined') {
     console.warn('⚠️ EmailJS library not loaded. Check if the script is included in HTML.');
 }
 
-// Contact Form Handling
-const contactForm = document.getElementById('contact-form');
-if (contactForm) {
-    console.log('✅ Contact form found and event listener attached');
+// Contact Form Handling Function
+function attachFormHandler(form) {
+    console.log('✅ Attaching form submission handler...');
     
-    contactForm.addEventListener('submit', function(e) {
-    e.preventDefault();
-    console.log('📝 Form submitted!');
-    
-    // Get form data
-    const formData = {
-        name: document.getElementById('name').value.trim(),
-        email: document.getElementById('email').value.trim(),
-        phone: document.getElementById('phone').value.trim(),
-        service: document.getElementById('service').value,
-        date: document.getElementById('date').value,
-        time: document.getElementById('time').value,
-        location: document.getElementById('location').value.trim(),
-        message: document.getElementById('message').value.trim()
-    };
-    
-    // Validate required fields
-    console.log('📋 Form data collected:', formData);
-    
-    if (!formData.name || !formData.email || !formData.location || !formData.message) {
-        console.error('❌ Validation failed - missing required fields');
-        showErrorMessage('Please fill in all required fields (Name, Email, Location, and Message).');
-        return;
-    }
-    
-    console.log('✅ All required fields validated');
-    
-    // Show loading state
-    const submitButton = contactForm.querySelector('button[type="submit"]');
-    const originalButtonText = submitButton.textContent;
-    submitButton.textContent = 'Sending...';
-    submitButton.disabled = true;
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log('📝 Form submitted! (preventDefault called)');
+        
+        // Get form data
+        const formData = {
+            name: document.getElementById('name').value.trim(),
+            email: document.getElementById('email').value.trim(),
+            phone: document.getElementById('phone').value.trim(),
+            service: document.getElementById('service').value,
+            date: document.getElementById('date').value,
+            time: document.getElementById('time').value,
+            location: document.getElementById('location').value.trim(),
+            message: document.getElementById('message').value.trim()
+        };
+        
+        // Validate required fields
+        console.log('📋 Form data collected:', formData);
+        
+        if (!formData.name || !formData.email || !formData.location || !formData.message) {
+            console.error('❌ Validation failed - missing required fields');
+            showErrorMessage('Please fill in all required fields (Name, Email, Location, and Message).');
+            return;
+        }
+        
+        console.log('✅ All required fields validated');
+        
+        // Show loading state
+        const submitButton = form.querySelector('button[type="submit"]');
+        const originalButtonText = submitButton.textContent;
+        submitButton.textContent = 'Sending...';
+        submitButton.disabled = true;
     
     // Format date for display
     const formattedDate = formData.date ? formatDate(formData.date) : 'Not specified';
@@ -221,13 +227,15 @@ SRICHAITHANYA DIGITALS Website`,
         console.error('❌ EmailJS not configured or library missing');
         console.log('Booking details that would be sent:', emailParams);
         showSuccessMessage('Thank you! Your booking request has been received. We will contact you soon. (Enable EmailJS to receive email notifications)');
-        contactForm.reset();
+        form.reset();
         submitButton.textContent = originalButtonText;
         submitButton.disabled = false;
         return;
     }
     
     console.log('✅ EmailJS is configured and ready to send');
+    console.log('📧 EmailJS object:', typeof emailjs, emailjs);
+    console.log('📧 EmailJS.send function:', typeof emailjs.send);
 
     // Send via EmailJS
     console.log('📧 Attempting to send email...');
@@ -236,7 +244,14 @@ SRICHAITHANYA DIGITALS Website`,
         templateId: EMAILJS_CONFIG.TEMPLATE_ID,
         hasPublicKey: !!EMAILJS_CONFIG.PUBLIC_KEY
     });
-    console.log('Email Parameters:', emailParams);
+    console.log('📧 Email Parameters being sent:', emailParams);
+    console.log('📧 Template expects: name, email, message, time');
+    console.log('📧 We are sending:', {
+        name: emailParams.name,
+        email: emailParams.email,
+        message: emailParams.message ? 'Yes (length: ' + emailParams.message.length + ')' : 'No',
+        time: emailParams.time
+    });
     console.log('🚀 Calling emailjs.send()...');
     
     emailjs.send(EMAILJS_CONFIG.SERVICE_ID, EMAILJS_CONFIG.TEMPLATE_ID, emailParams)
@@ -246,28 +261,39 @@ SRICHAITHANYA DIGITALS Website`,
                 text: response.text,
                 response: response
             });
+            console.log('📧 EmailJS Response:', response);
             console.log('📧 IMPORTANT: Check your EmailJS dashboard → Email History');
-            console.log('📧 If email shows "OK" but not received, check:');
-            console.log('   1. EmailJS Template "To Email" field is set to: srichaithanyacseaiml@gmail.com');
-            console.log('   2. Template is Published (not Draft)');
-            console.log('   3. Check Gmail spam folder');
-            showSuccessMessage('Thank you! Your booking request has been sent successfully. We will contact you soon.');
-            contactForm.reset();
+            console.log('📧 Go to: https://dashboard.emailjs.com/admin/inbox');
+            console.log('📧 Click on the most recent entry and check:');
+            console.log('   - "To" field should show: srichaithanyacseaiml@gmail.com');
+            console.log('   - "From" field - what does it show?');
+            console.log('   - "Status" - what does it say?');
+            console.log('📧 If email shows "OK" but not received:');
+            console.log('   1. Check Gmail spam folder (most common issue!)');
+            console.log('   2. Use "Test It" button in EmailJS template');
+            console.log('   3. Verify Gmail service is "Connected"');
+            console.log('   4. Try setting "From Email" to: srichaithanyacseaiml@gmail.com');
+            showSuccessMessage('Thank you! Your booking request has been sent successfully. Please check your EmailJS Email History to verify delivery. If not received, check spam folder.');
+            form.reset();
         })
         .catch(function(error) {
             console.error('❌ EmailJS send error:', error);
+            console.error('❌ Full error object:', JSON.stringify(error, null, 2));
             console.error('Error details:', {
                 status: error.status,
                 text: error.text,
                 serviceId: EMAILJS_CONFIG.SERVICE_ID,
                 templateId: EMAILJS_CONFIG.TEMPLATE_ID,
-                publicKey: EMAILJS_CONFIG.PUBLIC_KEY ? 'Set' : 'Missing'
+                publicKey: EMAILJS_CONFIG.PUBLIC_KEY ? 'Set' : 'Missing',
+                errorType: error.constructor.name
             });
             
             // More specific error messages
             let errorMessage = 'There was a problem sending your booking request. ';
             if (error.status === 400) {
-                errorMessage += 'Please check your EmailJS template configuration.';
+                errorMessage += 'Template variables may not match. Check console for details.';
+                console.error('💡 TIP: Your template uses: {{name}}, {{email}}, {{message}}, {{time}}');
+                console.error('💡 We sent:', Object.keys(emailParams));
             } else if (error.status === 401) {
                 errorMessage += 'EmailJS authentication failed. Please check your Public Key.';
             } else if (error.status === 404) {
@@ -283,8 +309,9 @@ SRICHAITHANYA DIGITALS Website`,
             submitButton.disabled = false;
         });
     });
+    
+    console.log('✅ Form event listener attached successfully!');
 }
-});
 
 // Helper function to format date
 function formatDate(dateString) {
