@@ -161,58 +161,116 @@ function logout() {
 
 // Login Modal Management
 function openLoginModal() {
+    console.log('🔓 Opening login modal...');
     const modal = document.getElementById('login-modal');
-    if (modal) {
-        modal.classList.add('show');
-        document.body.style.overflow = 'hidden';
-        
-        // Initialize Google Sign-In button if not already done
-        if (typeof google !== 'undefined' && google.accounts) {
-            initializeGoogleSignIn();
-        } else {
-            // Wait for Google script to load
-            const checkGoogle = setInterval(() => {
-                if (typeof google !== 'undefined' && google.accounts) {
-                    clearInterval(checkGoogle);
-                    initializeGoogleSignIn();
-                }
-            }, 100);
-        }
+    if (!modal) {
+        console.error('❌ Login modal not found in DOM!');
+        return;
+    }
+    
+    console.log('✅ Modal found, showing it...');
+    modal.classList.add('show');
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    
+    console.log('✅ Modal should now be visible');
+    
+    // Initialize Google Sign-In button if not already done
+    const signInContainer = document.getElementById('google-signin-button');
+    if (!signInContainer) {
+        console.error('❌ Google sign-in container not found!');
+        return;
+    }
+    
+    if (typeof google !== 'undefined' && google.accounts) {
+        console.log('✅ Google API loaded, initializing sign-in button...');
+        initializeGoogleSignIn();
+    } else {
+        console.log('⏳ Waiting for Google API to load...');
+        // Wait for Google script to load
+        let attempts = 0;
+        const maxAttempts = 50; // 5 seconds max
+        const checkGoogle = setInterval(() => {
+            attempts++;
+            if (typeof google !== 'undefined' && google.accounts) {
+                console.log('✅ Google API loaded after', attempts * 100, 'ms');
+                clearInterval(checkGoogle);
+                initializeGoogleSignIn();
+            } else if (attempts >= maxAttempts) {
+                console.error('❌ Google API failed to load after 5 seconds');
+                clearInterval(checkGoogle);
+                // Show fallback message
+                signInContainer.innerHTML = '<p style="color: var(--muted);">Google Sign-In is loading... Please refresh the page if this persists.</p>';
+            }
+        }, 100);
     }
 }
 
 function closeLoginModal() {
+    console.log('❌ Closing login modal...');
     const modal = document.getElementById('login-modal');
     if (modal) {
         modal.classList.remove('show');
+        modal.style.display = 'none';
         document.body.style.overflow = '';
+        console.log('✅ Modal closed');
     }
 }
 
 // Initialize Google Sign-In button
 function initializeGoogleSignIn() {
+    console.log('🔧 Initializing Google Sign-In button...');
     const signInContainer = document.getElementById('google-signin-button');
-    if (!signInContainer || !google.accounts) return;
+    if (!signInContainer) {
+        console.error('❌ Sign-in container not found!');
+        return;
+    }
+    
+    if (!google || !google.accounts) {
+        console.error('❌ Google API not available!');
+        signInContainer.innerHTML = '<p style="color: var(--accent);">Error: Google Sign-In not available. Please refresh the page.</p>';
+        return;
+    }
     
     // Clear any existing button
     signInContainer.innerHTML = '';
     
-    google.accounts.id.initialize({
-        client_id: 'YOUR_GOOGLE_CLIENT_ID', // You'll need to replace this
-        callback: handleCredentialResponse,
-        auto_select: false,
-        cancel_on_tap_outside: true
-    });
+    // Check if client ID is set
+    const clientId = 'YOUR_GOOGLE_CLIENT_ID';
+    if (clientId === 'YOUR_GOOGLE_CLIENT_ID') {
+        console.warn('⚠️ Google Client ID not configured!');
+        signInContainer.innerHTML = `
+            <div style="text-align: center; padding: 20px; background: rgba(255,107,107,0.1); border-radius: 8px; border: 1px solid rgba(255,107,107,0.3);">
+                <p style="color: var(--accent); margin-bottom: 10px;">⚠️ Google Sign-In Not Configured</p>
+                <p style="color: var(--muted); font-size: 0.9rem;">Please set up Google Client ID in script.js</p>
+                <p style="color: var(--muted); font-size: 0.85rem; margin-top: 10px;">See GOOGLE_LOGIN_SETUP.md for instructions</p>
+            </div>
+        `;
+        return;
+    }
     
-    google.accounts.id.renderButton(
-        signInContainer,
-        {
-            theme: 'filled_blue',
-            size: 'large',
-            text: 'signin_with',
-            width: 300
-        }
-    );
+    try {
+        google.accounts.id.initialize({
+            client_id: clientId,
+            callback: handleCredentialResponse,
+            auto_select: false,
+            cancel_on_tap_outside: true
+        });
+        
+        google.accounts.id.renderButton(
+            signInContainer,
+            {
+                theme: 'filled_blue',
+                size: 'large',
+                text: 'signin_with',
+                width: 300
+            }
+        );
+        console.log('✅ Google Sign-In button rendered successfully');
+    } catch (error) {
+        console.error('❌ Error initializing Google Sign-In:', error);
+        signInContainer.innerHTML = '<p style="color: var(--accent);">Error initializing Google Sign-In. Please try again.</p>';
+    }
 }
 
 // Initialize authentication on page load
@@ -236,7 +294,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const logoutBtn = document.getElementById('logout-btn');
     
     if (loginBtnNav) {
-        loginBtnNav.addEventListener('click', openLoginModal);
+        console.log('✅ Login button found, attaching click handler');
+        loginBtnNav.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('🖱️ Login button clicked!');
+            openLoginModal();
+        });
+    } else {
+        console.error('❌ Login button not found!');
     }
     
     if (loginBtnPrompt) {
