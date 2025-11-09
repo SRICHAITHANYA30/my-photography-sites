@@ -319,15 +319,21 @@ if (typeof emailjs !== 'undefined') {
 // Contact Form Handling
 const contactForm = document.getElementById('contact-form');
 if (contactForm) {
+    console.log('✅ Contact form found and event listener attached');
+    
     contactForm.addEventListener('submit', function(e) {
     e.preventDefault();
+    console.log('📝 Form submitted!');
     
     // Check if user is logged in
     if (!currentUser) {
+        console.warn('⚠️ User not logged in - showing login modal');
         showErrorMessage('Please login first to book a photoshoot.');
         openLoginModal();
         return;
     }
+    
+    console.log('✅ User is logged in:', currentUser.email);
     
     // Get form data
     const formData = {
@@ -342,10 +348,15 @@ if (contactForm) {
     };
     
     // Validate required fields
+    console.log('📋 Form data collected:', formData);
+    
     if (!formData.name || !formData.email || !formData.location || !formData.message) {
+        console.error('❌ Validation failed - missing required fields');
         showErrorMessage('Please fill in all required fields (Name, Email, Location, and Message).');
         return;
     }
+    
+    console.log('✅ All required fields validated');
     
     // Show loading state
     const submitButton = contactForm.querySelector('button[type="submit"]');
@@ -429,14 +440,25 @@ SRICHAITHANYA DIGITALS Website`,
     
     // Check if EmailJS is configured - if not, fall back to showing success and logging details
     const configured = EMAILJS_CONFIG.PUBLIC_KEY && EMAILJS_CONFIG.SERVICE_ID && EMAILJS_CONFIG.TEMPLATE_ID;
+    console.log('🔧 EmailJS Configuration Check:', {
+        hasPublicKey: !!EMAILJS_CONFIG.PUBLIC_KEY,
+        hasServiceId: !!EMAILJS_CONFIG.SERVICE_ID,
+        hasTemplateId: !!EMAILJS_CONFIG.TEMPLATE_ID,
+        emailjsLoaded: typeof emailjs !== 'undefined',
+        configured: configured
+    });
+    
     if (!configured || typeof emailjs === 'undefined') {
-        console.log('EmailJS not configured or library missing. Booking details:', emailParams);
+        console.error('❌ EmailJS not configured or library missing');
+        console.log('Booking details that would be sent:', emailParams);
         showSuccessMessage('Thank you! Your booking request has been received. We will contact you soon. (Enable EmailJS to receive email notifications)');
         contactForm.reset();
         submitButton.textContent = originalButtonText;
         submitButton.disabled = false;
         return;
     }
+    
+    console.log('✅ EmailJS is configured and ready to send');
 
     // Send via EmailJS
     console.log('📧 Attempting to send email...');
@@ -446,13 +468,16 @@ SRICHAITHANYA DIGITALS Website`,
         hasPublicKey: !!EMAILJS_CONFIG.PUBLIC_KEY
     });
     console.log('Email Parameters:', emailParams);
+    console.log('🚀 Calling emailjs.send()...');
     
     emailjs.send(EMAILJS_CONFIG.SERVICE_ID, EMAILJS_CONFIG.TEMPLATE_ID, emailParams)
         .then(function(response) {
             console.log('✅ Email sent successfully!', {
                 status: response.status,
-                text: response.text
+                text: response.text,
+                response: response
             });
+            console.log('📧 Check your EmailJS dashboard → Email History to verify');
             showSuccessMessage('Thank you! Your booking request has been sent successfully. We will contact you soon.');
             contactForm.reset();
         })
