@@ -23,9 +23,9 @@ html,body{height:100%;font-family: 'Inter', system-ui, -apple-system, 'Segoe UI'
 
 /* NAV */
 .navbar{position:sticky;top:0;backdrop-filter: blur(6px);background:linear-gradient(180deg, rgba(11,17,28,0.6), rgba(11,17,28,0.4));border-bottom:1px solid rgba(255,255,255,0.04);z-index:1000}
-.navbar .container{display:flex;align-items:center;justify-content:space-between;padding:18px 20px}
+.navbar .container{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;flex-wrap:wrap;gap:12px;}
 .logo{font-family:'Playfair Display', serif;font-weight:600;color:var(--text);font-size:1.35rem;letter-spacing:0.6px}
-.nav-menu{list-style:none;display:flex;gap:22px;align-items:center}
+.nav-menu{list-style:none;display:flex;gap:22px;align-items:center;flex:1;justify-content:flex-end;}
 .nav-menu a{text-decoration:none;color:var(--muted);font-weight:600;transition:all .3s ease;position:relative;padding:4px 0;}
 .nav-menu a::after{content:'';position:absolute;bottom:0;left:0;width:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width 0.3s ease;}
 .nav-menu a:hover{color:var(--text);transform:translateY(-2px);}
@@ -38,8 +38,9 @@ html,body{height:100%;font-family: 'Inter', system-ui, -apple-system, 'Segoe UI'
 .user-name{color:var(--text);font-weight:600;font-size:0.95rem;}
 .logout-btn{background:rgba(255,107,107,0.2);border:1px solid rgba(255,107,107,0.3);color:var(--accent);padding:6px 14px;border-radius:8px;cursor:pointer;font-size:0.85rem;font-weight:600;transition:all 0.3s ease;}
 .logout-btn:hover{background:rgba(255,107,107,0.3);border-color:var(--accent);transform:translateY(-2px);}
-.login-btn-nav{background:linear-gradient(135deg,var(--accent),var(--accent-2));padding:8px 18px;border-radius:10px;color:#071025;font-weight:700;border:none;cursor:pointer;transition:all 0.3s ease;box-shadow:0 4px 15px rgba(255,107,107,0.3);margin-left:20px;}
+.login-btn-nav{background:linear-gradient(135deg,var(--accent),var(--accent-2));padding:8px 18px;border-radius:10px;color:#071025;font-weight:700;border:none;cursor:pointer;transition:all 0.3s ease;box-shadow:0 4px 15px rgba(255,107,107,0.3);margin-left:20px;display:inline-block !important;visibility:visible !important;opacity:1 !important;}
 .login-btn-nav:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(255,107,107,0.4);}
+.login-btn-nav[style*="display: none"]{display:inline-block !important;}
 .hamburger{display:none;cursor:pointer;flex-direction:column;gap:4px;padding:8px;transition:all 0.3s ease;}
 .hamburger:hover{opacity:0.8;}
 .hamburger span{display:block;width:24px;height:2px;background:var(--text);margin:0;border-radius:2px;transition:all 0.3s ease;}

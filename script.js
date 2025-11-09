@@ -28,6 +28,8 @@ function checkAuthStatus() {
 function updateUIForLoggedInUser() {
     if (!currentUser) return;
     
+    console.log('✅ Updating UI for logged in user');
+    
     // Show user info in navbar
     const userAuth = document.getElementById('user-auth');
     const loginBtnNav = document.getElementById('login-btn-nav');
@@ -49,6 +51,7 @@ function updateUIForLoggedInUser() {
     
     if (loginBtnNav) {
         loginBtnNav.style.display = 'none';
+        loginBtnNav.style.visibility = 'hidden';
     }
     
     // Show booking form, hide login prompt
@@ -72,6 +75,8 @@ function updateUIForLoggedInUser() {
 
 // Update UI when user is logged out
 function updateUIForLoggedOutUser() {
+    console.log('👤 Updating UI for logged out user');
+    
     const userAuth = document.getElementById('user-auth');
     const loginBtnNav = document.getElementById('login-btn-nav');
     const contactForm = document.getElementById('contact-form');
@@ -82,8 +87,12 @@ function updateUIForLoggedOutUser() {
     }
     
     if (loginBtnNav) {
-        loginBtnNav.style.display = 'block';
+        loginBtnNav.style.display = 'inline-block';
         loginBtnNav.style.visibility = 'visible';
+        loginBtnNav.style.opacity = '1';
+        console.log('✅ Login button should now be visible');
+    } else {
+        console.error('❌ Login button not found in DOM!');
     }
     
     // Hide booking form, show login prompt
@@ -92,6 +101,7 @@ function updateUIForLoggedOutUser() {
     }
     if (loginPrompt) {
         loginPrompt.style.display = 'block';
+        console.log('✅ Login prompt should now be visible');
     }
     
     console.log('👤 User is logged out - Login button and prompt should be visible');
@@ -208,10 +218,19 @@ function initializeGoogleSignIn() {
 // Initialize authentication on page load
 document.addEventListener('DOMContentLoaded', () => {
     console.log('🚀 Page loaded - Initializing authentication...');
+    
+    // Make sure login button is visible initially (before checking auth)
+    let loginBtnNav = document.getElementById('login-btn-nav');
+    if (loginBtnNav) {
+        loginBtnNav.style.display = 'inline-block';
+        loginBtnNav.style.visibility = 'visible';
+        loginBtnNav.style.opacity = '1';
+    }
+    
     checkAuthStatus();
     
-    // Login button handlers
-    const loginBtnNav = document.getElementById('login-btn-nav');
+    // Login button handlers (reuse variable)
+    loginBtnNav = document.getElementById('login-btn-nav');
     const loginBtnPrompt = document.getElementById('login-btn-prompt');
     const closeModal = document.getElementById('close-modal');
     const logoutBtn = document.getElementById('logout-btn');
