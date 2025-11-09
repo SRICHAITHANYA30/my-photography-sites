@@ -267,10 +267,87 @@ function addGalleryImage(imagePath, altText = '') {
     galleryGrid.appendChild(galleryItem);
 }
 
-// Photo Upload Functionality
+// Admin Mode Management
+let isAdminMode = false;
+
+// Check if admin mode was previously enabled
+function checkAdminMode() {
+    const savedAdminMode = localStorage.getItem('galleryAdminMode');
+    if (savedAdminMode === 'true') {
+        enableAdminMode();
+    }
+}
+
+// Enable admin mode
+function enableAdminMode() {
+    isAdminMode = true;
+    localStorage.setItem('galleryAdminMode', 'true');
+    const uploadSection = document.getElementById('gallery-upload-section');
+    const adminToggle = document.getElementById('admin-toggle');
+    
+    if (uploadSection) {
+        uploadSection.style.display = 'block';
+    }
+    if (adminToggle) {
+        adminToggle.classList.add('active');
+        adminToggle.textContent = '🔓';
+        adminToggle.title = 'Admin Mode Active';
+    }
+}
+
+// Disable admin mode
+function disableAdminMode() {
+    isAdminMode = false;
+    localStorage.removeItem('galleryAdminMode');
+    const uploadSection = document.getElementById('gallery-upload-section');
+    const adminToggle = document.getElementById('admin-toggle');
+    
+    if (uploadSection) {
+        uploadSection.style.display = 'none';
+    }
+    if (adminToggle) {
+        adminToggle.classList.remove('active');
+        adminToggle.textContent = '🔒';
+        adminToggle.title = 'Enable Admin Mode';
+    }
+}
+
+// Initialize admin mode on page load
+document.addEventListener('DOMContentLoaded', () => {
+    checkAdminMode();
+    
+    // Admin toggle button
+    const adminToggle = document.getElementById('admin-toggle');
+    if (adminToggle) {
+        adminToggle.addEventListener('click', () => {
+            if (isAdminMode) {
+                disableAdminMode();
+            } else {
+                enableAdminMode();
+            }
+        });
+    }
+    
+    // Exit admin button
+    const exitAdmin = document.getElementById('exit-admin');
+    if (exitAdmin) {
+        exitAdmin.addEventListener('click', () => {
+            disableAdminMode();
+        });
+    }
+});
+
+// Photo Upload Functionality (Only works in admin mode)
 const photoUpload = document.getElementById('photo-upload');
 if (photoUpload) {
     photoUpload.addEventListener('change', function(e) {
+        // Check if admin mode is enabled
+        if (!isAdminMode) {
+            alert('Admin mode is required to upload photos.');
+            this.value = '';
+            return;
+        }
+        
         const files = e.target.files;
         
         if (files.length === 0) return;

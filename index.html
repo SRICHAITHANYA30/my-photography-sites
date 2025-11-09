@@ -43,18 +43,24 @@
     <section id="gallery" class="gallery">
         <div class="container">
             <h2 class="section-title">Gallery</h2>
-            <div class="gallery-upload-section">
+            <!-- Admin Mode Toggle (Hidden - Only for owner) -->
+            <div class="admin-toggle-container">
+                <button id="admin-toggle" class="admin-toggle-btn" title="Enable Admin Mode">🔒</button>
+            </div>
+            <!-- Upload Section (Hidden by default, shown only in admin mode) -->
+            <div class="gallery-upload-section" id="gallery-upload-section" style="display: none;">
                 <label for="photo-upload" class="upload-btn">
                     <span>📷 Upload Photos</span>
                     <input type="file" id="photo-upload" accept="image/*" multiple style="display: none;">
                 </label>
                 <p class="upload-hint">Select one or more photos from your computer</p>
+                <button id="exit-admin" class="exit-admin-btn">Exit Admin Mode</button>
             </div>
             <div class="gallery-grid" id="gallery-grid">
                 <!-- Photos will be added here dynamically -->
                 <div class="gallery-placeholder">
                     <p>Your photos will appear here</p>
-                    <small>Click "Upload Photos" above to add images from your computer</small>
+                    <small>Gallery photos will be displayed here</small>
                 </div>
             </div>
         </div>
