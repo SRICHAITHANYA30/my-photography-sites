@@ -6,16 +6,20 @@ let currentUser = null;
 
 // Check if user is logged in on page load
 function checkAuthStatus() {
+    console.log('🔍 Checking authentication status...');
     const savedUser = localStorage.getItem('galleryUser');
     if (savedUser) {
         try {
             currentUser = JSON.parse(savedUser);
+            console.log('✅ User found in localStorage:', currentUser.email);
             updateUIForLoggedInUser();
         } catch (e) {
-            console.error('Error parsing saved user:', e);
+            console.error('❌ Error parsing saved user:', e);
             localStorage.removeItem('galleryUser');
+            updateUIForLoggedOutUser();
         }
     } else {
+        console.log('ℹ️ No user found - showing login options');
         updateUIForLoggedOutUser();
     }
 }
@@ -79,6 +83,7 @@ function updateUIForLoggedOutUser() {
     
     if (loginBtnNav) {
         loginBtnNav.style.display = 'block';
+        loginBtnNav.style.visibility = 'visible';
     }
     
     // Hide booking form, show login prompt
@@ -88,6 +93,8 @@ function updateUIForLoggedOutUser() {
     if (loginPrompt) {
         loginPrompt.style.display = 'block';
     }
+    
+    console.log('👤 User is logged out - Login button and prompt should be visible');
 }
 
 // Handle Google Sign-In
@@ -200,6 +207,7 @@ function initializeGoogleSignIn() {
 
 // Initialize authentication on page load
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('🚀 Page loaded - Initializing authentication...');
     checkAuthStatus();
     
     // Login button handlers
