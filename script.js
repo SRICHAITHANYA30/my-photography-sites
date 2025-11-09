@@ -151,10 +151,12 @@ if (contactForm) {
         timeStyle: 'short'
     });
     
+    // Prepare email template parameters
+    // Match your EmailJS template variable names: {{name}}, {{email}}, {{message}}, {{time}}
     const emailParams = {
-        // Standard Contact Us template variables (most common)
-        from_name: formData.name,
-        from_email: formData.email,
+        // Template variables (matching your EmailJS template)
+        name: formData.name,
+        email: formData.email,
         message: `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 BOOKING REQUEST FROM WEBSITE
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -187,6 +189,10 @@ Please contact the customer to confirm the booking.
 
 ---
 SRICHAITHANYA DIGITALS Website`,
+        time: bookingTime,
+        // Also include standard variables for compatibility
+        from_name: formData.name,
+        from_email: formData.email,
         // Additional variables for detailed templates
         customer_name: formData.name,
         customer_email: formData.email,
