@@ -21,7 +21,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Load gallery images
     if (galleryImages.length > 0) {
         galleryImages.forEach((imagePath, index) => {
-            addGalleryImage(imagePath, `Photo ${index + 1}`);
+            // First image is the Canon R6 camera
+            const altText = index === 0 ? 'Canon R6 Camera - Professional Photography Equipment' : `Photo ${index + 1}`;
+            addGalleryImage(imagePath, altText);
         });
     }
     
@@ -622,6 +624,8 @@ if (photoUpload) {
 // Place your images in the 'images' folder and update the paths
 
 const galleryImages = [
+    // Canon R6 Camera showcase image
+    'https://images.unsplash.com/photo-1606983340126-99ab4feaa64a?w=800&q=80',
     // Add your photo paths here, for example:
     // 'images/photo1.jpg',
     // 'images/photo2.jpg',
