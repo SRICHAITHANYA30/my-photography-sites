@@ -637,10 +637,10 @@ if (photoUpload) {
 // Place your images in the 'images' folder and update the paths
 
 const galleryImages = [
-    // Sample camera SVG placeholders added by the editor
-    'images/camera1.svg',
-    'images/camera2.svg',
-    'images/camera3.svg'
+    // Using the image files you added to the `images/` folder
+    'images/c1.jpg',
+    'images/c2.jpg',
+    'images/c3.webp'
 ];
 
 // Load gallery images when page loads (moved to main DOMContentLoaded)
