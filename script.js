@@ -637,12 +637,10 @@ if (photoUpload) {
 // Place your images in the 'images' folder and update the paths
 
 const galleryImages = [
-    // Add your photo paths here, for example:
-    // 'images/photo1.jpg',
-    // 'images/photo2.jpg',
-    // 'images/photo3.jpg',
-    // 'images/photo4.jpg',
-    // Add as many as you want!
+    // Sample camera SVG placeholders added by the editor
+    'images/camera1.svg',
+    'images/camera2.svg',
+    'images/camera3.svg'
 ];
 
 // Load gallery images when page loads (moved to main DOMContentLoaded)
