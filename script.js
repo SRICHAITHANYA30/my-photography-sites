@@ -79,6 +79,11 @@ const EMAILJS_CONFIG = {
     TEMPLATE_ID: 'template_dele6fz'          // Your Contact Us Template ID
 };
 
+// Admin password for enabling upload UI (change this to your preferred secret)
+// NOTE: This is a simple client-side protection and not secure for public-facing sites.
+// For production, implement server-side authentication.
+const ADMIN_PASS = 'admin123';
+
 // Initialize EmailJS
 if (typeof emailjs !== 'undefined') {
     if (EMAILJS_CONFIG.PUBLIC_KEY && EMAILJS_CONFIG.PUBLIC_KEY !== 'YOUR_PUBLIC_KEY') {
@@ -535,8 +540,16 @@ function initializeAdminMode() {
         adminToggle.addEventListener('click', () => {
             if (isAdminMode) {
                 disableAdminMode();
-            } else {
+                return;
+            }
+
+            // Ask for admin password before enabling admin mode
+            const attempt = prompt('Enter admin password to enable admin mode:');
+            if (attempt === null) return; // user cancelled
+            if (attempt === ADMIN_PASS) {
                 enableAdminMode();
+            } else {
+                alert('Incorrect password. Admin mode not enabled.');
             }
         });
     }
