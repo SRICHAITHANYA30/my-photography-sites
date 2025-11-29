@@ -640,7 +640,8 @@ const galleryImages = [
     // Using the image files you added to the `images/` folder
     'images/c1.jpg',
     'images/c2.jpg',
-    'images/c3.webp'
+    'images/c3.webp',
+    'images/c4.webp'
 ];
 
 // Load gallery images when page loads (moved to main DOMContentLoaded)
