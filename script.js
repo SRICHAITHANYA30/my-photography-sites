@@ -127,10 +127,25 @@ function attachFormHandler(form) {
         
         console.log('✅ All required fields validated');
         
-        // Show loading state
+        // Show loading state (visual + text)
         const submitButton = form.querySelector('button[type="submit"]');
         const originalButtonText = submitButton.textContent;
-        submitButton.textContent = 'Sending...';
+        // Add label wrapper if not present
+        if (!submitButton.querySelector('.btn-label')) {
+            const labelSpan = document.createElement('span');
+            labelSpan.className = 'btn-label';
+            labelSpan.textContent = originalButtonText;
+            submitButton.textContent = '';
+            submitButton.appendChild(labelSpan);
+        }
+        submitButton.classList.add('btn-loading');
+        // add spinner
+        let spinner = submitButton.querySelector('.btn-spinner');
+        if (!spinner) {
+            spinner = document.createElement('span');
+            spinner.className = 'btn-spinner';
+            submitButton.appendChild(spinner);
+        }
         submitButton.disabled = true;
     
     // Format date for display
@@ -226,9 +241,23 @@ SRICHAITHANYA DIGITALS Website`,
     if (!configured || typeof emailjs === 'undefined') {
         console.error('❌ EmailJS not configured or library missing');
         console.log('Booking details that would be sent:', emailParams);
+        // show visual success briefly
+        submitButton.classList.remove('btn-loading');
+        submitButton.classList.add('btn-success');
+        // add check icon
+        if (!submitButton.querySelector('.btn-check')) {
+            const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+            svg.setAttribute('viewBox','0 0 24 24');
+            svg.classList.add('btn-check');
+            svg.innerHTML = '<path d="M20.285 6.709a1 1 0 0 0-1.414-1.418l-9.192 9.21-4.186-4.186a1 1 0 1 0-1.414 1.414l4.888 4.889a1 1 0 0 0 1.414 0l10.604-10.909z"/>';
+            submitButton.appendChild(svg);
+        }
         showSuccessMessage('Thank you! Your booking request has been received. We will contact you soon. (Enable EmailJS to receive email notifications)');
+        setTimeout(() => {
+            submitButton.classList.remove('btn-success');
+            const check = submitButton.querySelector('.btn-check'); if (check) check.remove();
+        }, 2200);
         form.reset();
-        submitButton.textContent = originalButtonText;
         submitButton.disabled = false;
         return;
     }
@@ -273,8 +302,25 @@ SRICHAITHANYA DIGITALS Website`,
             console.log('   2. Use "Test It" button in EmailJS template');
             console.log('   3. Verify Gmail service is "Connected"');
             console.log('   4. Try setting "From Email" to: srichaithanyacseaiml@gmail.com');
+            // success visual
+            submitButton.classList.remove('btn-loading');
+            // replace spinner with check
+            const spinnerEl = submitButton.querySelector('.btn-spinner'); if (spinnerEl) spinnerEl.remove();
+            if (!submitButton.querySelector('.btn-check')) {
+                const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+                svg.setAttribute('viewBox','0 0 24 24');
+                svg.classList.add('btn-check');
+                svg.innerHTML = '<path d="M20.285 6.709a1 1 0 0 0-1.414-1.418l-9.192 9.21-4.186-4.186a1 1 0 1 0-1.414 1.414l4.888 4.889a1 1 0 0 0 1.414 0l10.604-10.909z"/>';
+                submitButton.appendChild(svg);
+            }
+            submitButton.classList.add('btn-success');
             showSuccessMessage('Thank you! Your booking request has been sent successfully. Please check your EmailJS Email History to verify delivery. If not received, check spam folder.');
             form.reset();
+            // after a short delay remove success state
+            setTimeout(() => {
+                submitButton.classList.remove('btn-success');
+                const check = submitButton.querySelector('.btn-check'); if (check) check.remove();
+            }, 2200);
         })
         .catch(function(error) {
             console.error('❌ EmailJS send error:', error);
@@ -305,13 +351,43 @@ SRICHAITHANYA DIGITALS Website`,
             showErrorMessage(errorMessage);
         })
         .finally(function() {
-            submitButton.textContent = originalButtonText;
+            // ensure loading removed if still present
+            submitButton.classList.remove('btn-loading');
+            const spinnerEl = submitButton.querySelector('.btn-spinner'); if (spinnerEl) spinnerEl.remove();
+            // restore label text if label wrapper exists
+            const label = submitButton.querySelector('.btn-label');
+            if (label) {
+                // leave the label text as original
+            } else {
+                submitButton.textContent = originalButtonText;
+            }
             submitButton.disabled = false;
         });
     });
     
     console.log('✅ Form event listener attached successfully!');
 }
+
+// Ripple effect for interactive buttons (anchors and buttons)
+function addGlobalRipple() {
+    document.addEventListener('click', function(e) {
+        const btn = e.target.closest('.btn-primary, .btn-secondary, .cta, .upload-btn, button[type="submit"]');
+        if (!btn) return;
+        // create ripple
+        const rect = btn.getBoundingClientRect();
+        const ripple = document.createElement('span');
+        ripple.className = 'ripple';
+        const size = Math.max(rect.width, rect.height) * 0.8;
+        ripple.style.width = ripple.style.height = size + 'px';
+        ripple.style.left = (e.clientX - rect.left - size/2) + 'px';
+        ripple.style.top = (e.clientY - rect.top - size/2) + 'px';
+        btn.appendChild(ripple);
+        // remove after animation
+        setTimeout(() => ripple.remove(), 700);
+    }, { passive: true });
+}
+
+addGlobalRipple();
 
 // Helper function to format date
 function formatDate(dateString) {
