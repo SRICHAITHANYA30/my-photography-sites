@@ -116,8 +116,7 @@ section{padding:64px 0}
 .gallery-placeholder p{color:var(--muted);font-size:1.1rem;margin-bottom:8px;}
 .gallery-placeholder small{color:var(--muted);opacity:0.7;}
 
-.promo-banner{margin:24px auto;padding:26px;border-radius:12px;background:linear-gradient(90deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));display:flex;align-items:center;justify-content:space-between;gap:12px}
-.promo-banner h2{font-size:1.25rem}
+/* promo-banner removed - styles kept minimal in case needed later */
 
 /* Contact layout */
 .contact-wrapper{display:grid;grid-template-columns:1fr 1.2fr;gap:22px;align-items:start}
@@ -172,7 +171,7 @@ section{padding:64px 0}
   .gallery-item img{height:220px;}
   .gallery-upload-section{padding:24px 20px;}
   .upload-btn{padding:12px 24px;font-size:0.95rem;}
-  .promo-banner{flex-direction:column;text-align:center;padding:28px 20px;}
+  /* promo-banner removed - responsive rules not required */
   .section-title::after{width:40px;}
   .user-auth{flex-direction:column;gap:8px;margin-left:0;margin-top:12px;}
   .login-btn-nav{margin-left:0;margin-top:12px;}
