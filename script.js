@@ -572,6 +572,35 @@ window.addEventListener('scroll', () => {
     }
     
     lastScroll = currentScroll;
+
+    // Keep hamburger icon animated state in sync with nav (adds X animation)
+    if (hamburger) {
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+        });
+    }
+
+    // Scroll / reveal animations using IntersectionObserver
+    (function setupRevealObserver(){
+        const revealElems = document.querySelectorAll('.reveal');
+        if (!revealElems || revealElems.length === 0) return;
+
+        if ('IntersectionObserver' in window) {
+            const obs = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.12 });
+
+            revealElems.forEach(el => obs.observe(el));
+        } else {
+            // Fallback: make all visible
+            revealElems.forEach(el => el.classList.add('visible'));
+        }
+    })();
 });
 
 // Removed duplicate - now handled in main DOMContentLoaded
