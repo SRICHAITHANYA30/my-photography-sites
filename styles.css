@@ -3,8 +3,8 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 :root{
   /* Light / airy theme */
-  --bg-start: #f7fbff; /* very light */
-  --bg-end: #eef6fb;   /* soft blue */
+  --bg-start: #e6f7ff; /* sky blue - light */
+  --bg-end: #cfeeff;   /* sky blue - slightly deeper */
   --card:#ffffff;
   --muted:#6b7280; /* gray-500 */
   --text:#0b2540;  /* dark navy text */
