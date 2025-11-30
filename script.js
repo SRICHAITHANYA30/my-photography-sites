@@ -123,10 +123,10 @@ function attachFormHandler(form) {
         
         // Validate required fields
         console.log('📋 Form data collected:', formData);
-        
-        if (!formData.name || !formData.email || !formData.location || !formData.message) {
+    
+        if (!formData.name || !formData.email || !formData.phone || !formData.location || !formData.message) {
             console.error('❌ Validation failed - missing required fields');
-            showErrorMessage('Please fill in all required fields (Name, Email, Location, and Message).');
+            showErrorMessage('Please fill in all required fields (Name, Email, Phone, Location, and Message).');
             return;
         }
         
