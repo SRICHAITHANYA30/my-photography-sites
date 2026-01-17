@@ -50,26 +50,31 @@ This guide will help you set up Google Sign-In for your photography website so c
 ## Step 5: Add Client ID to Your Website
 
 1. Open `script.js` in your project
-2. Find this line (around line 184):
+2. Find the Google config section near the top:
    ```javascript
-   client_id: 'YOUR_GOOGLE_CLIENT_ID', // You'll need to replace this
+   const GOOGLE_CONFIG = {
+       CLIENT_ID: (typeof window !== 'undefined' && window.GOOGLE_CLIENT_ID) ? window.GOOGLE_CLIENT_ID : 'YOUR_GOOGLE_CLIENT_ID',
+       OWNER_EMAILS: (typeof window !== 'undefined' && window.OWNER_EMAILS) ? window.OWNER_EMAILS : ['srichaithanyacseaiml@gmail.com']
+   };
    ```
-3. Replace `'YOUR_GOOGLE_CLIENT_ID'` with your actual Client ID from Step 4
-4. Save the file
-
-Example:
-```javascript
-client_id: '123456789-abcdefghijklmnop.apps.googleusercontent.com',
-```
+3. Replace `'YOUR_GOOGLE_CLIENT_ID'` with your actual Client ID from Step 4.
+   Example:
+   ```javascript
+   CLIENT_ID: '123456789-abcdefghijklmnop.apps.googleusercontent.com'
+   ```
+4. Optionally set approved owner emails:
+   - Edit `OWNER_EMAILS` array in `script.js`, or
+   - Define `window.OWNER_EMAILS = ['owner1@gmail.com', 'owner2@gmail.com']` in a small inline script before `script.js` on `owner-login.html`.
+5. Save the file(s).
 
 ## Step 6: Test the Login
 
 1. Open your website in a browser
-2. Click the "Login" button in the navigation
+2. Click "Customer Login" or "Owner Login" in the top right
 3. You should see a Google Sign-In button
 4. Click it and sign in with a Google account
-5. After successful login, you should see your profile picture and name in the navbar
-6. The booking form should now be visible
+5. After successful login, you will be redirected to the home page
+6. Your account details (name/email/avatar) will appear in the top corner
 
 ## Important Notes
 
@@ -90,7 +95,8 @@ client_id: '123456789-abcdefghijklmnop.apps.googleusercontent.com',
 - **Solution**: 
   1. Check browser console for errors
   2. Verify the Google Identity Services script is loaded
-  3. Make sure your Client ID is correctly set in script.js
+   3. Make sure your Client ID is correctly set in `script.js`
+   4. Ensure you are serving the site from `http://localhost` or an HTTPS domain (GIS requires a valid origin)
 
 ## Need Help?
 

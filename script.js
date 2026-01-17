@@ -34,6 +34,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Initialize admin mode
     initializeAdminMode();
+
+    // Render account info in navbar if logged in
+    renderAccountInfo();
 });
 
 // ============================================
@@ -77,6 +80,12 @@ const EMAILJS_CONFIG = {
     PUBLIC_KEY: 'AkADBIUF3aHanmrFx',        // Your EmailJS Public Key
     SERVICE_ID: 'service_uovuw8h',           // Your Gmail Service ID
     TEMPLATE_ID: 'template_dele6fz'          // Your Contact Us Template ID
+};
+
+// Google Sign-In configuration
+const GOOGLE_CONFIG = {
+    CLIENT_ID: (typeof window !== 'undefined' && window.GOOGLE_CLIENT_ID) ? window.GOOGLE_CLIENT_ID : 'YOUR_GOOGLE_CLIENT_ID',
+    OWNER_EMAILS: (typeof window !== 'undefined' && window.OWNER_EMAILS) ? window.OWNER_EMAILS : ['srichaithanyacseaiml@gmail.com']
 };
 
 // Admin password for enabling upload UI (change this to your preferred secret)
@@ -371,6 +380,146 @@ SRICHAITHANYA DIGITALS Website`,
     });
     
     console.log('✅ Form event listener attached successfully!');
+}
+
+// ============================================
+// Google Sign-In (GIS) Helpers
+// ============================================
+
+function decodeJwt(token) {
+    if (!token) return null;
+    const parts = token.split('.');
+    if (parts.length !== 3) return null;
+    const payload = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+    try {
+        const json = decodeURIComponent(atob(payload).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+        return JSON.parse(json);
+    } catch (e) {
+        console.error('Failed to decode JWT payload', e);
+        return null;
+    }
+}
+
+function saveLogin(profile, role) {
+    try {
+        localStorage.setItem('userProfile', JSON.stringify(profile));
+        localStorage.setItem('userRole', role || 'customer');
+    } catch (e) {
+        console.error('Failed to save login', e);
+    }
+}
+
+function getLogin() {
+    try {
+        const profile = JSON.parse(localStorage.getItem('userProfile') || 'null');
+        const role = localStorage.getItem('userRole') || null;
+        return { profile, role };
+    } catch (e) {
+        return { profile: null, role: null };
+    }
+}
+
+function logout() {
+    localStorage.removeItem('userProfile');
+    localStorage.removeItem('userRole');
+    renderAccountInfo();
+    // Optional: disable admin mode if it was enabled
+    try { disableAdminMode(); } catch (_) {}
+}
+
+function renderAccountInfo() {
+    const { profile } = getLogin();
+    const infoEl = document.getElementById('account-info');
+    const avatarEl = document.getElementById('user-avatar');
+    const nameEl = document.getElementById('user-name');
+    const customerLink = document.getElementById('customer-login-link');
+    const ownerLink = document.getElementById('owner-login-link');
+    const logoutBtn = document.getElementById('logout-btn');
+
+    if (!infoEl) return; // navbar not present on some pages
+
+    if (profile && profile.email) {
+        infoEl.style.display = 'flex';
+        if (avatarEl) {
+            if (profile.picture) {
+                avatarEl.src = profile.picture;
+                avatarEl.style.display = 'block';
+            } else {
+                avatarEl.style.display = 'none';
+            }
+        }
+        if (nameEl) {
+            nameEl.textContent = profile.name || profile.email || 'My Account';
+        }
+        if (customerLink) customerLink.style.display = 'none';
+        if (ownerLink) ownerLink.style.display = 'none';
+        if (logoutBtn) {
+            logoutBtn.onclick = logout;
+        }
+    } else {
+        infoEl.style.display = 'none';
+        if (customerLink) customerLink.style.display = 'inline-block';
+        if (ownerLink) ownerLink.style.display = 'inline-block';
+        if (logoutBtn) logoutBtn.onclick = null;
+    }
+}
+
+function initGoogleSignIn(role) {
+    const cid = GOOGLE_CONFIG.CLIENT_ID;
+    if (!cid || cid === 'YOUR_GOOGLE_CLIENT_ID') {
+        alert('Google Client ID is not configured. See GOOGLE_LOGIN_SETUP.md for setup.');
+        return;
+    }
+
+    function initialize() {
+        if (!window.google || !google.accounts || !google.accounts.id) {
+            console.warn('Google Identity Services not available yet.');
+            return;
+        }
+        google.accounts.id.initialize({
+            client_id: cid,
+            callback: (response) => handleCredentialResponse(response, role),
+            ux_mode: 'popup',
+            auto_select: false,
+            context: 'signin'
+        });
+        const btnContainer = document.getElementById('google-signin-container');
+        if (btnContainer) {
+            google.accounts.id.renderButton(btnContainer, { theme: 'outline', size: 'large', type: 'standard', text: 'signin_with', shape: 'pill' });
+        } else {
+            google.accounts.id.prompt();
+        }
+    }
+
+    if (window.google && google.accounts && google.accounts.id) {
+        initialize();
+    } else {
+        window.addEventListener('load', initialize);
+    }
+}
+
+function handleCredentialResponse(response, role) {
+    try {
+        const jwt = response && response.credential;
+        const profile = decodeJwt(jwt) || {};
+        if (!profile || !profile.email) {
+            alert('Sign-in failed. No email found.');
+            return;
+        }
+        if (role === 'owner') {
+            const allowed = (GOOGLE_CONFIG.OWNER_EMAILS || []).some(e => String(e).toLowerCase() === String(profile.email).toLowerCase());
+            if (!allowed) {
+                alert('Owner access denied for: ' + profile.email);
+                return;
+            }
+        }
+        saveLogin({ email: profile.email, name: profile.name, picture: profile.picture }, role || 'customer');
+        // Redirect to home after successful login
+        window.location.href = 'index.html';
+    } catch (e) {
+        console.error('Google sign-in error', e);
+        alert('Google sign-in error. Please check console.');
+    }
 }
 
 // Ripple effect for interactive buttons (anchors and buttons)
