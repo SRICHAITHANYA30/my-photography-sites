@@ -185,6 +185,23 @@ function attachFormHandler(form) {
         dateStyle: 'full',
         timeStyle: 'short'
     });
+
+    // Save booking locally for admin dashboard
+    try {
+        saveBooking({
+            name: formData.name,
+            email: formData.email,
+            phone: formData.phone,
+            service: serviceName,
+            date: formattedDate,
+            time: formattedTime,
+            location: formData.location,
+            message: formData.message
+        }, { bookingTime });
+        console.log('🗂️ Booking saved locally for admin dashboard');
+    } catch (err) {
+        console.warn('⚠️ Failed to save booking locally:', err);
+    }
     
     // Prepare email template parameters
     // Match your EmailJS template variable names: {{name}}, {{email}}, {{message}}, {{time}}
@@ -428,12 +445,13 @@ function logout() {
 }
 
 function renderAccountInfo() {
-    const { profile } = getLogin();
+    const { profile, role } = getLogin();
     const infoEl = document.getElementById('account-info');
     const avatarEl = document.getElementById('user-avatar');
     const nameEl = document.getElementById('user-name');
     const customerLink = document.getElementById('customer-login-link');
     const ownerLink = document.getElementById('owner-login-link');
+    const adminLink = document.getElementById('admin-dashboard-link');
     const logoutBtn = document.getElementById('logout-btn');
 
     if (!infoEl) return; // navbar not present on some pages
@@ -453,6 +471,7 @@ function renderAccountInfo() {
         }
         if (customerLink) customerLink.style.display = 'none';
         if (ownerLink) ownerLink.style.display = 'none';
+        if (adminLink) adminLink.style.display = (role === 'owner') ? 'inline-block' : 'none';
         if (logoutBtn) {
             logoutBtn.onclick = logout;
         }
@@ -460,6 +479,7 @@ function renderAccountInfo() {
         infoEl.style.display = 'none';
         if (customerLink) customerLink.style.display = 'inline-block';
         if (ownerLink) ownerLink.style.display = 'inline-block';
+        if (adminLink) adminLink.style.display = 'none';
         if (logoutBtn) logoutBtn.onclick = null;
     }
 }
@@ -514,6 +534,10 @@ function handleCredentialResponse(response, role) {
             }
         }
         saveLogin({ email: profile.email, name: profile.name, picture: profile.picture }, role || 'customer');
+        // Auto-enable admin mode for owners
+        if (role === 'owner') {
+            try { enableAdminMode(); } catch (_) {}
+        }
         // Redirect to home after successful login
         window.location.href = 'index.html';
     } catch (e) {
@@ -841,4 +865,33 @@ window.addEventListener('scroll', () => {
 });
 
 // Removed duplicate - now handled in main DOMContentLoaded
+
+// ============================================
+// Booking Storage (Local)
+// ============================================
+function getBookings(){
+    try { return JSON.parse(localStorage.getItem('bookings')||'[]'); } catch(e){ return []; }
+}
+function setBookings(list){
+    try { localStorage.setItem('bookings', JSON.stringify(list)); } catch(e){}
+}
+function saveBooking(data, meta){
+    const list = getBookings();
+    const booking = {
+        id: 'b_' + Date.now(),
+        createdAt: (meta && meta.bookingTime) ? meta.bookingTime : new Date().toLocaleString(),
+        status: 'new',
+        name: data.name,
+        email: data.email,
+        phone: data.phone,
+        service: data.service,
+        date: data.date,
+        time: data.time,
+        location: data.location,
+        message: data.message
+    };
+    list.push(booking);
+    setBookings(list);
+    return booking;
+}
 
