@@ -32,16 +32,31 @@
   </nav>
 
   <main id="main">
-    <section class="contact">
+    <section class="login-screen">
       <div class="container">
-        <h2 class="section-title">Customer Login</h2>
-        <p class="section-subtitle">Sign in with your Gmail account</p>
-        <div class="login-modal show">
-          <div class="login-modal-content">
-            <h2>Sign in to continue</h2>
-            <p class="login-subtitle">Use Google to sign in quickly and securely.</p>
+        <div class="login-card">
+          <div class="login-form-side">
+            <h2 class="login-form-title">Login</h2>
+            <p class="login-form-sub">Customer account (Google Sign-In)</p>
+            <div class="login-field">
+              <label>Username</label>
+              <input class="login-input" type="text" placeholder="Your Gmail address" disabled />
+            </div>
+            <div class="login-field">
+              <label>Password</label>
+              <input class="login-input" type="password" placeholder="Use Google to sign in" disabled />
+            </div>
+            <div class="login-actions">
+              <button class="login-btn" type="button" id="googlePromptBtn">Sign in with Google</button>
+            </div>
+            <p class="login-sep">or</p>
             <div id="google-signin-container" class="google-signin-container"></div>
-            <p class="login-note">After signing in, you will be redirected to the home page and your account details will appear in the top corner.</p>
+            <p class="login-note muted" style="margin-top:12px">After signing in, you'll be redirected to Home and your account appears in the top corner.</p>
+          </div>
+          <div class="welcome-side">
+            <div class="welcome-panel">
+              <div class="welcome-text">WELCOME BACK!<small>SRICHAITHANYA DIGITALS</small></div>
+            </div>
           </div>
         </div>
       </div>
@@ -71,6 +86,15 @@
   <script>
     // Initialize Google Sign-In for customer role
     initGoogleSignIn('customer');
+    // Custom button triggers the Google prompt
+    window.addEventListener('load', function(){
+      var btn = document.getElementById('googlePromptBtn');
+      if (btn && window.google && google.accounts && google.accounts.id) {
+        btn.addEventListener('click', function(){
+          try { google.accounts.id.prompt(); } catch(e){ console.warn(e); }
+        });
+      }
+    });
   </script>
 </body>
 </html>
