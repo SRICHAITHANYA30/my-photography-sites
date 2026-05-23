@@ -20,18 +20,129 @@ function saveAllBookings(bookings) {
     }
 }
 
+function getBookingHistoryContainer() {
+    return document.querySelector('#booking-history .container');
+}
+
+function showBookingFeedback(message, type = 'success') {
+    const container = getBookingHistoryContainer();
+    if (!container) {
+        alert(message);
+        return;
+    }
+
+    const existing = container.querySelector('.booking-feedback');
+    if (existing) {
+        existing.remove();
+    }
+
+    const feedback = document.createElement('div');
+    feedback.className = `booking-feedback ${type}`;
+    feedback.textContent = message;
+    const filters = container.querySelector('.booking-filters');
+    if (filters) {
+        filters.insertAdjacentElement('beforebegin', feedback);
+    } else {
+        container.insertBefore(feedback, container.firstChild);
+    }
+
+    requestAnimationFrame(() => feedback.classList.add('show'));
+
+    setTimeout(() => {
+        feedback.classList.remove('show');
+        setTimeout(() => feedback.remove(), 300);
+    }, 4000);
+}
+
+function buildCancellationEmailMessage(booking) {
+    return `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+BOOKING CANCELLED BY CUSTOMER
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+CUSTOMER DETAILS:
+Name: ${booking.name || 'Not specified'}
+Email: ${booking.email || 'Not specified'}
+Phone: ${booking.phone || 'Not specified'}
+
+BOOKING DETAILS:
+Service Type: ${booking.service || 'Not specified'}
+Preferred Date: ${booking.date || 'Not specified'}
+Arrival Time: ${booking.time || 'Not specified'}
+Location/Address: ${booking.location || 'Not specified'}
+Message: ${booking.message || 'Not specified'}
+Booking Status: Cancelled
+
+Booking ID: ${booking.id || 'Not specified'}
+Cancelled At: ${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', dateStyle: 'full', timeStyle: 'short' })}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+This notification was generated from the website booking history.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
+}
+
+function sendCancellationNotification(booking) {
+    const emailConfig = (typeof window !== 'undefined' && window.EMAILJS_CONFIG) ? window.EMAILJS_CONFIG : null;
+    const emailjsAvailable = typeof emailjs !== 'undefined';
+
+    if (!emailConfig || !emailConfig.SERVICE_ID || !emailConfig.TEMPLATE_ID || !emailjsAvailable) {
+        console.warn('Cancellation email not sent: EmailJS is not configured or unavailable.');
+        return Promise.resolve(false);
+    }
+
+    const emailParams = {
+        name: booking.name || 'Not specified',
+        email: booking.email || 'Not specified',
+        message: buildCancellationEmailMessage(booking),
+        time: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', dateStyle: 'full', timeStyle: 'short' }),
+        from_name: booking.name || 'Website Customer',
+        from_email: booking.email || 'Not specified',
+        customer_name: booking.name || 'Not specified',
+        customer_email: booking.email || 'Not specified',
+        customer_phone: booking.phone || 'Not specified',
+        service_type: booking.service || 'Not specified',
+        booking_date: booking.date || 'Not specified',
+        arrival_time: booking.time || 'Not specified',
+        location: booking.location || 'Not specified',
+        booking_status: 'Cancelled',
+        booking_id: booking.id || 'Not specified',
+        reply_to: booking.email || 'Not specified',
+        to_email: 'srichaithanyacseaiml@gmail.com'
+    };
+
+    return emailjs.send(emailConfig.SERVICE_ID, emailConfig.TEMPLATE_ID, emailParams)
+        .then(() => true)
+        .catch((error) => {
+            console.error('Failed to send cancellation email:', error);
+            return false;
+        });
+}
+
 // Update booking status
 function updateBookingStatus(bookingId, newStatus) {
     const bookings = getAllBookings();
     const booking = bookings.find(b => b.id === bookingId);
     if (booking) {
+        const previousStatus = booking.status || 'Pending';
         booking.status = newStatus;
         saveAllBookings(bookings);
         renderBookingHistory();
         updateAdminDashboard();
+
+        if (newStatus === 'Cancelled' && previousStatus !== 'Cancelled') {
+            sendCancellationNotification(booking);
+            showBookingFeedback('Your booking has been cancelled successfully.', 'success');
+        }
+
         return true;
     }
     return false;
+}
+
+function cancelBooking(bookingId) {
+    const confirmCancel = window.confirm('Are you sure you want to cancel this booking?');
+    if (!confirmCancel) return;
+
+    updateBookingStatus(bookingId, 'Cancelled');
 }
 
 // Delete booking
@@ -46,6 +157,8 @@ function deleteBooking(bookingId) {
 // Create booking card HTML
 function createBookingCard(booking, isAdmin = false) {
     const statusClass = booking.status || 'Pending';
+    const messageText = booking.message ? (booking.message.length > 100 ? `${booking.message.substring(0, 100)}...` : booking.message) : 'Not specified';
+    const isCancelled = statusClass === 'Cancelled';
     let html = `
         <div class="booking-card" data-id="${booking.id}">
             <div class="booking-header">
@@ -58,15 +171,25 @@ function createBookingCard(booking, isAdmin = false) {
             <div class="booking-detail"><strong>📅 Date:</strong> ${booking.date || 'Not specified'}</div>
             <div class="booking-detail"><strong>⏰ Time:</strong> ${booking.time || 'Not specified'}</div>
             <div class="booking-detail"><strong>📍 Location:</strong> ${booking.location}</div>
-            <div class="booking-detail"><strong>💬 Message:</strong> ${booking.message.substring(0, 100)}...</div>
+            <div class="booking-detail"><strong>💬 Message:</strong> ${messageText}</div>
     `;
+
+    if (!isAdmin) {
+        html += `
+            <div class="booking-actions booking-actions-user">
+                <button class="action-btn action-btn-cancel" onclick="cancelBooking('${booking.id}')" ${isCancelled ? 'disabled aria-disabled="true"' : ''}>
+                    ${isCancelled ? 'Cancelled' : 'Cancel Booking'}
+                </button>
+            </div>
+        `;
+    }
     
     if (isAdmin) {
         html += `
             <div class="booking-actions">
                 <button class="action-btn action-btn-confirm" onclick="updateBookingStatus('${booking.id}', 'Confirmed')">✓ Confirm</button>
                 <button class="action-btn action-btn-complete" onclick="updateBookingStatus('${booking.id}', 'Completed')">✓ Complete</button>
-                <button class="action-btn action-btn-cancel" onclick="updateBookingStatus('${booking.id}', 'Cancelled')">✕ Cancel</button>
+                <button class="action-btn action-btn-cancel" onclick="updateBookingStatus('${booking.id}', 'Cancelled')" ${isCancelled ? 'disabled aria-disabled="true"' : ''}>✕ Cancel</button>
             </div>
         `;
     }

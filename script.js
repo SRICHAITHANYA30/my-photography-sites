@@ -82,6 +82,10 @@ const EMAILJS_CONFIG = {
     TEMPLATE_ID: 'template_dele6fz'          // Your Contact Us Template ID
 };
 
+if (typeof window !== 'undefined') {
+    window.EMAILJS_CONFIG = EMAILJS_CONFIG;
+}
+
 // Google Sign-In configuration
 const GOOGLE_CONFIG = {
     CLIENT_ID: (typeof window !== 'undefined' && window.GOOGLE_CLIENT_ID) ? window.GOOGLE_CLIENT_ID : 'YOUR_GOOGLE_CLIENT_ID',
