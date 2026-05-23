@@ -188,7 +188,11 @@ function attachFormHandler(form) {
 
     // Save booking locally for admin dashboard
     try {
-        saveBooking({
+        const bookings = JSON.parse(localStorage.getItem('bookings') || '[]');
+        const newBooking = {
+            id: 'b_' + Date.now(),
+            createdAt: bookingTime,
+            status: 'Pending',
             name: formData.name,
             email: formData.email,
             phone: formData.phone,
@@ -197,8 +201,10 @@ function attachFormHandler(form) {
             time: formattedTime,
             location: formData.location,
             message: formData.message
-        }, { bookingTime });
-        console.log('🗂️ Booking saved locally for admin dashboard');
+        };
+        bookings.push(newBooking);
+        localStorage.setItem('bookings', JSON.stringify(bookings));
+        console.log('🗂️ Booking saved with status: Pending');
     } catch (err) {
         console.warn('⚠️ Failed to save booking locally:', err);
     }
@@ -675,6 +681,7 @@ function enableAdminMode() {
     localStorage.setItem('galleryAdminMode', 'true');
     const uploadSection = document.getElementById('gallery-upload-section');
     const adminToggle = document.getElementById('admin-toggle');
+    const dashboardBtn = document.getElementById('admin-dashboard-btn');
     
     if (uploadSection) {
         uploadSection.style.display = 'block';
@@ -684,6 +691,9 @@ function enableAdminMode() {
         adminToggle.textContent = '🔓';
         adminToggle.title = 'Admin Mode Active';
     }
+    if (dashboardBtn) {
+        dashboardBtn.style.display = 'inline-block';
+    }
 }
 
 // Disable admin mode
@@ -692,6 +702,7 @@ function disableAdminMode() {
     localStorage.removeItem('galleryAdminMode');
     const uploadSection = document.getElementById('gallery-upload-section');
     const adminToggle = document.getElementById('admin-toggle');
+    const dashboardBtn = document.getElementById('admin-dashboard-btn');
     
     if (uploadSection) {
         uploadSection.style.display = 'none';
@@ -700,6 +711,9 @@ function disableAdminMode() {
         adminToggle.classList.remove('active');
         adminToggle.textContent = '🔒';
         adminToggle.title = 'Enable Admin Mode';
+    }
+    if (dashboardBtn) {
+        dashboardBtn.style.display = 'none';
     }
 }
 

@@ -19,7 +19,10 @@
             <ul class="nav-menu">
                 <li><a href="#home">Home</a></li>
                 <li><a href="#gallery">Gallery</a></li>
+                <li><a href="#packages">Packages</a></li>
                 <li><a href="#contact">Book Now</a></li>
+                <li><a href="#booking-history">Booking History</a></li>
+                <li><a href="#contact-us">Contact</a></li>
             </ul>
             <!-- Account details / login links -->
             <div class="user-auth">
@@ -60,6 +63,7 @@
             <!-- Admin Mode Toggle (Hidden - Only for owner) -->
             <div class="admin-toggle-container">
                 <button id="admin-toggle" class="admin-toggle-btn" title="Enable Admin Mode">🔒</button>
+                <button id="admin-dashboard-btn" class="admin-toggle-btn" title="Admin Dashboard" style="display: none;">📊</button>
             </div>
             <!-- Upload Section (Hidden by default, shown only in admin mode) -->
             <div class="gallery-upload-section" id="gallery-upload-section" style="display: none;">
@@ -80,13 +84,133 @@
         </div>
     </section>
 
-    <!-- Promotional banner removed as requested -->
+    <!-- About Us Section -->
+    <section id="about" class="about">
+        <div class="container">
+            <h2 class="section-title">About Us</h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <h3>Professional Photography Services</h3>
+                    <p>Welcome to SRICHAITHANYA DIGITALS, where we capture your most precious moments with creativity and expertise. With years of experience in professional photography, we specialize in creating timeless memories through our lens.</p>
+                    <p>Our team is dedicated to understanding your vision and bringing it to life with stunning visual storytelling. From weddings to corporate events, we deliver excellence in every frame.</p>
+                    <div class="about-details">
+                        <div class="detail-item">
+                            <strong>📍 Location</strong>
+                            <p>ERODE, Tamil Nadu</p>
+                        </div>
+                        <div class="detail-item">
+                            <strong>⭐ Experience</strong>
+                            <p>10+ Years in Professional Photography</p>
+                        </div>
+                        <div class="detail-item">
+                            <strong>📞 Contact</strong>
+                            <p>9566381467 | srichaithanyacseaiml@gmail.com</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Packages Section -->
+    <section id="packages" class="packages">
+        <div class="container">
+            <h2 class="section-title">Our Packages</h2>
+            <p class="section-subtitle">Choose the perfect package for your special moments</p>
+            <div class="packages-grid">
+                <div class="package-card">
+                    <h3>Wedding Photography</h3>
+                    <p class="package-price">₹50,000</p>
+                    <p class="package-desc">Complete wedding coverage including pre-wedding, ceremony, and reception with edited albums.</p>
+                    <ul class="package-features">
+                        <li>✓ 8-10 Hours Coverage</li>
+                        <li>✓ 500+ Edited Photos</li>
+                        <li>✓ Soft Copy Album</li>
+                        <li>✓ Video Highlights</li>
+                    </ul>
+                    <button class="btn-primary select-package" data-package="Wedding Photography">Select Package</button>
+                </div>
+
+                <div class="package-card">
+                    <h3>Birthday Celebration</h3>
+                    <p class="package-price">₹15,000</p>
+                    <p class="package-desc">Capture every joyful moment of your birthday with professional photography and editing.</p>
+                    <ul class="package-features">
+                        <li>✓ 4-5 Hours Coverage</li>
+                        <li>✓ 150+ Edited Photos</li>
+                        <li>✓ Digital Album</li>
+                        <li>✓ Quick Edit Photos</li>
+                    </ul>
+                    <button class="btn-primary select-package" data-package="Birthday Celebration">Select Package</button>
+                </div>
+
+                <div class="package-card">
+                    <h3>Outdoor Shoot</h3>
+                    <p class="package-price">₹20,000</p>
+                    <p class="package-desc">Beautiful outdoor photography for pre-wedding shoots, couple sessions, and nature shoots.</p>
+                    <ul class="package-features">
+                        <li>✓ 3-4 Hours Coverage</li>
+                        <li>✓ 200+ Edited Photos</li>
+                        <li>✓ Soft & Hard Copy</li>
+                        <li>✓ Premium Editing</li>
+                    </ul>
+                    <button class="btn-primary select-package" data-package="Outdoor Shoot">Select Package</button>
+                </div>
+
+                <div class="package-card">
+                    <h3>Product Photography</h3>
+                    <p class="package-price">₹10,000</p>
+                    <p class="package-desc">Professional product photography for e-commerce, catalogs, and business promotion.</p>
+                    <ul class="package-features">
+                        <li>✓ 30-50 Products</li>
+                        <li>✓ Multiple Angles</li>
+                        <li>✓ Background Removal</li>
+                        <li>✓ Web Optimized</li>
+                    </ul>
+                    <button class="btn-primary select-package" data-package="Product Photography">Select Package</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section id="testimonials" class="testimonials">
+        <div class="container">
+            <h2 class="section-title">Client Reviews</h2>
+            <p class="section-subtitle">What our customers say about our work</p>
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <div class="stars">★★★★★</div>
+                    <p class="review-text">"Absolutely stunning photos! The photographer was professional and made us feel comfortable throughout the session. Highly recommended!"</p>
+                    <p class="review-author">- Priya & Rajesh</p>
+                </div>
+
+                <div class="testimonial-card">
+                    <div class="stars">★★★★★</div>
+                    <p class="review-text">"Best investment for our wedding day. The team captured every precious moment beautifully. The albums look amazing!"</p>
+                    <p class="review-author">- Ananya Kumar</p>
+                </div>
+
+                <div class="testimonial-card">
+                    <div class="stars">★★★★★</div>
+                    <p class="review-text">"Great experience with the outdoor photoshoot. The editing quality is exceptional and they delivered on time!"</p>
+                    <p class="review-author">- Vikram Singh</p>
+                </div>
+
+                <div class="testimonial-card">
+                    <div class="stars">★★★★★</div>
+                    <p class="review-text">"Professional service, reasonable pricing, and amazing results. Will definitely book again for our next event!"</p>
+                    <p class="review-author">- Divya Menon</p>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <!-- Contact/Booking Section -->
     <section id="contact" class="contact">
         <div class="container">
-            <h2 class="section-title">Get in Touch</h2>
-            <p class="section-subtitle">Ready to capture your special moments? Contact us today</p>
+            <h2 class="section-title">Book Your Session</h2>
+            <p class="section-subtitle">Ready to capture your special moments? Fill out the form below</p>
             <div class="contact-wrapper">
                 <div class="contact-info">
                     <h3>Contact Details</h3>
@@ -101,9 +225,6 @@
                     <div class="info-item">
                         <strong>Location</strong>
                         <p>ERODE, Tamil Nadu</p>
-                    </div>
-                </div>
-                <form class="contact-form" id="contact-form">
                     </div>
                 </div>
                 <form class="contact-form" id="contact-form">
@@ -123,11 +244,12 @@
                         <label for="service">Service Type</label>
                         <select id="service" name="service">
                             <option value="">Select a service</option>
-                            <option value="portrait">Portrait Photography</option>
-                            <option value="wedding">Wedding Photography</option>
-                            <option value="event">Event Photography</option>
-                            <option value="nature">Nature & Landscape</option>
-                            <option value="other">Other</option>
+                            <option value="Wedding Photography">Wedding Photography</option>
+                            <option value="Birthday Celebration">Birthday Celebration</option>
+                            <option value="Outdoor Shoot">Outdoor Shoot</option>
+                            <option value="Product Photography">Product Photography</option>
+                            <option value="Portrait Photography">Portrait Photography</option>
+                            <option value="Event Photography">Event Photography</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -137,19 +259,116 @@
                     <div class="form-group">
                         <label for="time">Photographer Arrival Time</label>
                         <input type="time" id="time" name="time">
-                        <small style="color: #666; font-size: 0.9rem; display: block; margin-top: 0.5rem;">Please specify the time when the photographer should reach the location</small>
+                        <small>Please specify the time when the photographer should reach</small>
                     </div>
                     <div class="form-group">
                         <label for="location">Location/Address *</label>
                         <textarea id="location" name="location" rows="3" placeholder="Enter the complete address where the photoshoot will take place" required></textarea>
-                        <small style="color: #666; font-size: 0.9rem; display: block; margin-top: 0.5rem;">Please provide the complete address including street, city, and any landmarks</small>
+                        <small>Please provide the complete address including street, city, and landmarks</small>
                     </div>
                     <div class="form-group">
                         <label for="message">Message *</label>
-                        <textarea id="message" name="message" rows="5" placeholder="Tell us about your photography needs and vision" required></textarea>
+                        <textarea id="message" name="message" rows="4" placeholder="Tell us about your photography needs and vision" required></textarea>
                     </div>
+
+                    <!-- Payment Option Section -->
+                    <div class="payment-section">
+                        <h4>Payment Options</h4>
+                        <div class="payment-option">
+                            <input type="radio" id="advance-payment" name="payment" value="advance" checked>
+                            <label for="advance-payment">Advance Payment (Optional)</label>
+                        </div>
+                        <div class="payment-option">
+                            <input type="radio" id="after-confirmation" name="payment" value="after">
+                            <label for="after-confirmation">Pay After Confirmation</label>
+                        </div>
+                        <div id="payment-details" style="display: none; margin-top: 16px;">
+                            <p class="payment-info"><strong>UPI Payment</strong><br>UPI ID: <code>9566381467@paytm</code></p>
+                            <div class="qr-placeholder">
+                                <p>📱 Scan QR Code to Pay</p>
+                                <small>(QR Code Image Placeholder)</small>
+                            </div>
+                        </div>
+                    </div>
+
                     <button type="submit" class="btn-primary">Send Inquiry</button>
                 </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Booking History Section -->
+    <section id="booking-history" class="booking-history">
+        <div class="container">
+            <h2 class="section-title">Booking History</h2>
+            <p class="section-subtitle">View your previous bookings and their status</p>
+            <div class="booking-filters">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="Pending">Pending</button>
+                <button class="filter-btn" data-filter="Confirmed">Confirmed</button>
+                <button class="filter-btn" data-filter="Completed">Completed</button>
+                <button class="filter-btn" data-filter="Cancelled">Cancelled</button>
+            </div>
+            <div id="bookings-list" class="bookings-list">
+                <div class="empty-state">
+                    <p>📅 No bookings yet</p>
+                    <small>Your bookings will appear here</small>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Admin Dashboard Section -->
+    <section id="admin-dashboard" class="admin-dashboard" style="display: none;">
+        <div class="container">
+            <h2 class="section-title">Admin Dashboard</h2>
+            <div class="admin-header">
+                <button id="close-dashboard" class="btn-secondary">← Back to Website</button>
+            </div>
+            <div class="dashboard-stats">
+                <div class="stat-card">
+                    <h3>Total Bookings</h3>
+                    <p class="stat-number" id="stat-total">0</p>
+                </div>
+                <div class="stat-card pending">
+                    <h3>Pending</h3>
+                    <p class="stat-number" id="stat-pending">0</p>
+                </div>
+                <div class="stat-card confirmed">
+                    <h3>Confirmed</h3>
+                    <p class="stat-number" id="stat-confirmed">0</p>
+                </div>
+                <div class="stat-card completed">
+                    <h3>Completed</h3>
+                    <p class="stat-number" id="stat-completed">0</p>
+                </div>
+            </div>
+            <div id="admin-bookings-list" class="admin-bookings-list">
+                <div class="empty-state">
+                    <p>📊 No bookings to manage</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Us Section (renamed from old contact section) -->
+    <section id="contact-us" class="contact-us">
+        <div class="container">
+            <h2 class="section-title">Get in Touch</h2>
+            <p class="section-subtitle">Have questions? Reach out to us directly</p>
+            <div class="contact-grid">
+                <div class="contact-item">
+                    <h3>📧 Email</h3>
+                    <p>srichaithanyacseaiml@gmail.com</p>
+                </div>
+                <div class="contact-item">
+                    <h3>📞 Phone</h3>
+                    <p>9566381467</p>
+                </div>
+                <div class="contact-item">
+                    <h3>📍 Location</h3>
+                    <p>ERODE, Tamil Nadu</p>
+                </div>
             </div>
         </div>
     </section>
@@ -176,7 +395,16 @@
 
     <!-- EmailJS for sending emails -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    
+    <!-- WhatsApp Floating Button -->
+    <a href="https://wa.me/919566381467?text=Hello%20SRICHAITHANYA%20DIGITALS%2C%20I%20would%20like%20to%20book%20a%20photoshoot." target="_blank" rel="noopener noreferrer" class="whatsapp-btn" title="Chat with us on WhatsApp">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.67-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.076 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421-7.403h-.004c-1.426 0-2.839-.356-4.204-1.03l-.302-.15-3.135.823.837-3.052-.196-.31A6.987 6.987 0 0 1 5.577.976c1.366 0 2.721.346 3.924 1.003.219.108.412.236.603.368 1.627.906 2.977 2.25 3.879 3.876.128.198.243.406.357.619A6.998 6.998 0 0 1 12.05 23.65c-1.366 0-2.721-.346-3.924-1.003-.219-.108-.412-.236-.603-.368-1.627-.906-2.977-2.25-3.879-3.876-.128-.198-.243-.406-.357-.619A7.003 7.003 0 0 1 5.577.976Z" fill="currentColor"/>
+        </svg>
+    </a>
+
     <script src="script.js"></script>
+    <script src="bookings.js"></script>
 </body>
 </html>
 
