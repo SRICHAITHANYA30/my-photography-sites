@@ -513,6 +513,8 @@ function initGoogleSignIn(role) {
         return;
     }
 
+    setupLoginForm(role);
+
     function initialize() {
         if (!window.google || !google.accounts || !google.accounts.id) {
             console.warn('Google Identity Services not available yet.');
@@ -537,6 +539,49 @@ function initGoogleSignIn(role) {
         initialize();
     } else {
         window.addEventListener('load', initialize);
+    }
+}
+
+function setupLoginForm(role) {
+    const formId = role === 'owner' ? 'owner-login-form' : 'customer-login-form';
+    const emailId = role === 'owner' ? 'owner-email' : 'customer-email';
+    const form = document.getElementById(formId);
+    const emailInput = document.getElementById(emailId);
+    if (!form || form.dataset.bound === 'true') return;
+
+    form.dataset.bound = 'true';
+    form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        const email = (emailInput && emailInput.value ? emailInput.value.trim() : '');
+        if (!email) {
+            alert('Please enter your Gmail address.');
+            if (emailInput) emailInput.focus();
+            return;
+        }
+        if (!/^[^\s@]+@gmail\.com$/i.test(email)) {
+            alert('Please use a Gmail address to continue.');
+            if (emailInput) emailInput.focus();
+            return;
+        }
+
+        try {
+            localStorage.setItem('loginEmailHint', email);
+        } catch (_) {}
+
+        if (window.google && google.accounts && google.accounts.id) {
+            google.accounts.id.prompt();
+        } else {
+            alert('Google Sign-In is still loading. Please wait a moment and try again.');
+        }
+    });
+
+    if (emailInput) {
+        emailInput.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                form.requestSubmit();
+            }
+        });
     }
 }
 

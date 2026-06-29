@@ -37,20 +37,22 @@
         <div class="login-card">
           <div class="login-form-side">
             <h2 class="login-form-title">Login</h2>
-            <p class="login-form-sub">Customer account (Google Sign-In)</p>
-            <div class="login-field">
-              <label>Username</label>
-              <input class="login-input" type="text" placeholder="Your Gmail address" disabled />
-            </div>
-            <div class="login-field">
-              <label>Password</label>
-              <input class="login-input" type="password" placeholder="Use Google to sign in" disabled />
-            </div>
-            <div class="login-actions">
-              <button class="login-btn" type="button" id="googlePromptBtn">Sign in with Google</button>
-            </div>
-            <p class="login-sep">or</p>
-            <div id="google-signin-container" class="google-signin-container"></div>
+            <p class="login-form-sub">Customer account sign in with Gmail</p>
+            <form id="customer-login-form" novalidate>
+              <div class="login-field">
+                <label for="customer-email">Email ID</label>
+                <input class="login-input" id="customer-email" name="email" type="email" placeholder="name@gmail.com" autocomplete="email" required />
+              </div>
+              <div class="login-field">
+                <label for="customer-note">Login method</label>
+                <input class="login-input" id="customer-note" type="text" value="Sign in with Google" readonly />
+              </div>
+              <div class="login-actions">
+                <button class="login-btn" type="submit" id="googlePromptBtn">Continue</button>
+              </div>
+              <p class="login-sep">or</p>
+              <div id="google-signin-container" class="google-signin-container"></div>
+            </form>
             <p class="login-note muted" style="margin-top:12px">After signing in, you'll be redirected to Home and your account appears in the top corner.</p>
           </div>
           <div class="welcome-side">
@@ -86,15 +88,6 @@
   <script>
     // Initialize Google Sign-In for customer role
     initGoogleSignIn('customer');
-    // Custom button triggers the Google prompt
-    window.addEventListener('load', function(){
-      var btn = document.getElementById('googlePromptBtn');
-      if (btn && window.google && google.accounts && google.accounts.id) {
-        btn.addEventListener('click', function(){
-          try { google.accounts.id.prompt(); } catch(e){ console.warn(e); }
-        });
-      }
-    });
   </script>
 </body>
 </html>

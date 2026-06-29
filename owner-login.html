@@ -37,20 +37,22 @@
         <div class="login-card">
           <div class="login-form-side">
             <h2 class="login-form-title">Login</h2>
-            <p class="login-form-sub">Owner account (Google Sign-In)</p>
-            <div class="login-field">
-              <label>Username</label>
-              <input class="login-input" type="text" placeholder="Owner Gmail address" disabled />
-            </div>
-            <div class="login-field">
-              <label>Password</label>
-              <input class="login-input" type="password" placeholder="Use Google to sign in" disabled />
-            </div>
-            <div class="login-actions">
-              <button class="login-btn" type="button" id="googlePromptBtn">Sign in with Google</button>
-            </div>
-            <p class="login-sep">or</p>
-            <div id="google-signin-container" class="google-signin-container"></div>
+            <p class="login-form-sub">Owner account sign in with Gmail</p>
+            <form id="owner-login-form" novalidate>
+              <div class="login-field">
+                <label for="owner-email">Email ID</label>
+                <input class="login-input" id="owner-email" name="email" type="email" placeholder="owner@gmail.com" autocomplete="email" required />
+              </div>
+              <div class="login-field">
+                <label for="owner-note">Login method</label>
+                <input class="login-input" id="owner-note" type="text" value="Sign in with Google" readonly />
+              </div>
+              <div class="login-actions">
+                <button class="login-btn" type="submit" id="googlePromptBtn">Continue</button>
+              </div>
+              <p class="login-sep">or</p>
+              <div id="google-signin-container" class="google-signin-container"></div>
+            </form>
             <p class="login-note muted" style="margin-top:12px">After signing in, you'll be redirected to Home and your account appears in the top corner. Only approved owner emails can access.</p>
           </div>
           <div class="welcome-side">
@@ -87,14 +89,6 @@
     // Initialize Google Sign-In for owner role
     // You can add/adjust allowed owner emails via window.OWNER_EMAILS before this call
     initGoogleSignIn('owner');
-    window.addEventListener('load', function(){
-      var btn = document.getElementById('googlePromptBtn');
-      if (btn && window.google && google.accounts && google.accounts.id) {
-        btn.addEventListener('click', function(){
-          try { google.accounts.id.prompt(); } catch(e){ console.warn(e); }
-        });
-      }
-    });
   </script>
 </body>
 </html>
