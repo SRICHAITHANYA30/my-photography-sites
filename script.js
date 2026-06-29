@@ -5,6 +5,18 @@
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', () => {
     console.log('🚀 Page loaded - Initializing...');
+
+    // Gate the homepage behind login so this page only opens after sign-in
+    const currentPage = (window.location.pathname.split('/').pop() || 'index.html').toLowerCase();
+    const { profile: currentProfile, role: currentRole } = getLogin();
+    if ((currentPage === '' || currentPage === 'index.html') && !(currentProfile && currentProfile.email)) {
+        window.location.replace('customer-login.html');
+        return;
+    }
+    if (currentPage === 'admin.html' && currentRole !== 'owner') {
+        window.location.replace('owner-login.html');
+        return;
+    }
     
     // Make sure booking form is always visible
     const contactForm = document.getElementById('contact-form');
