@@ -100,7 +100,7 @@ if (typeof window !== 'undefined') {
 
 // Google Sign-In configuration
 const GOOGLE_CONFIG = {
-    CLIENT_ID: (typeof window !== 'undefined' && window.GOOGLE_CLIENT_ID) ? window.GOOGLE_CLIENT_ID : 'YOUR_GOOGLE_CLIENT_ID',
+    CLIENT_ID: (typeof window !== 'undefined' && window.GOOGLE_CLIENT_ID) ? window.GOOGLE_CLIENT_ID : '985628179234-5mgkssbs8ih2jpd927vk2ajrgatq8o33.apps.googleusercontent.com',
     OWNER_EMAILS: (typeof window !== 'undefined' && window.OWNER_EMAILS) ? window.OWNER_EMAILS : ['srichaithanyacseaiml@gmail.com']
 };
 
