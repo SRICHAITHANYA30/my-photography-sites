@@ -19,6 +19,7 @@
     .status-new{background:rgba(59,130,246,0.2);color:#1d4ed8;border:1px solid rgba(59,130,246,0.3)}
     .status-in-progress{background:rgba(234,179,8,0.2);color:#b45309;border:1px solid rgba(234,179,8,0.3)}
     .status-completed{background:rgba(16,185,129,0.2);color:#065f46;border:1px solid rgba(16,185,129,0.3)}
+    .status-cancelled{background:rgba(239,68,68,0.2);color:#991b1b;border:1px solid rgba(239,68,68,0.3)}
     .small-btn{padding:6px 10px;border-radius:8px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.06);cursor:pointer}
     .small-btn:hover{background:rgba(255,255,255,0.12)}
     .search-input{padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.12);background:transparent;color:var(--text);min-width:240px}
@@ -129,7 +130,8 @@
       tbody.innerHTML='';
       list.forEach(function(b){
         var tr = document.createElement('tr');
-        var statusClass = b.status==='completed' ? 'status-completed' : (b.status==='in-progress' ? 'status-in-progress' : 'status-new');
+        var normalizedStatus = String(b.status || 'new').toLowerCase();
+        var statusClass = normalizedStatus === 'completed' ? 'status-completed' : (normalizedStatus === 'cancelled' ? 'status-cancelled' : (normalizedStatus === 'confirmed' || normalizedStatus === 'in-progress' ? 'status-in-progress' : 'status-new'));
         tr.innerHTML = `
           <td>${b.createdAt||b.bookingTime||''}</td>
           <td>${b.name||''}</td>
@@ -140,11 +142,11 @@
           <td>${b.time||''}</td>
           <td>${b.location||''}</td>
           <td>${(b.message||'').replace(/</g,'&lt;')}</td>
-          <td><span class="status-badge ${statusClass}">${b.status||'new'}</span></td>
+          <td><span class="status-badge ${statusClass}">${b.status || 'New'}</span></td>
           <td>
-            <button class="small-btn" data-action="progress" data-id="${b.id}">Mark In-Progress</button>
-            <button class="small-btn" data-action="done" data-id="${b.id}">Mark Completed</button>
-            <button class="small-btn" data-action="delete" data-id="${b.id}">Delete</button>
+            <button class="small-btn" data-action="confirm" data-id="${b.id}">Confirm</button>
+            <button class="small-btn" data-action="complete" data-id="${b.id}">Complete</button>
+            <button class="small-btn" data-action="cancel" data-id="${b.id}">Cancel</button>
           </td>
         `;
         tbody.appendChild(tr);
@@ -162,9 +164,9 @@
       var list = getBookings();
       var idx = list.findIndex(function(b){ return b.id===id; });
       if (idx<0) return;
-      if (action==='delete') { list.splice(idx,1); }
-      else if (action==='progress') { list[idx].status='in-progress'; }
-      else if (action==='done') { list[idx].status='completed'; }
+      if (action==='confirm') { list[idx].status='Confirmed'; }
+      else if (action==='complete') { list[idx].status='Completed'; }
+      else if (action==='cancel') { list[idx].status='Cancelled'; }
       setBookings(list);
       render(list);
     });
@@ -188,7 +190,7 @@
       var headers = ['Created','Name','Email','Phone','Service','Date','Arrival','Location','Message','Status'];
       var out = [headers.join(',')];
       rows.forEach(function(b){
-        var row = [b.createdAt||b.bookingTime||'',b.name||'',b.email||'',b.phone||'',b.service||'',b.date||'',b.time||'',b.location||'',(b.message||'').replace(/\n/g,' ').replace(/"/g,'\"'),b.status||'new'];
+        var row = [b.createdAt||b.bookingTime||'',b.name||'',b.email||'',b.phone||'',b.service||'',b.date||'',b.time||'',b.location||'',(b.message||'').replace(/\n/g,' ').replace(/"/g,'\"'),b.status||'New'];
         out.push(row.map(function(x){
           x = String(x);
           if (x.includes(',')||x.includes('"')) return '"'+x+'"';

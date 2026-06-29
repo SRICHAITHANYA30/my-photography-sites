@@ -605,8 +605,8 @@ function handleCredentialResponse(response, role) {
         if (role === 'owner') {
             try { enableAdminMode(); } catch (_) {}
         }
-        // Redirect to home after successful login
-        window.location.href = 'index.html';
+        // Redirect customer to home and owner to dashboard
+        window.location.href = (role === 'owner') ? 'admin.html' : 'index.html';
     } catch (e) {
         console.error('Google sign-in error', e);
         alert('Google sign-in error. Please check console.');
@@ -754,6 +754,9 @@ function enableAdminMode() {
     }
     if (dashboardBtn) {
         dashboardBtn.style.display = 'inline-block';
+        dashboardBtn.onclick = () => {
+            window.location.href = 'admin.html';
+        };
     }
 }
 
@@ -775,6 +778,7 @@ function disableAdminMode() {
     }
     if (dashboardBtn) {
         dashboardBtn.style.display = 'none';
+        dashboardBtn.onclick = null;
     }
 }
 
